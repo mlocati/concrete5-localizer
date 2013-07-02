@@ -1,0 +1,185 @@
+msgid ""
+msgstr "Project-Id-Version: localizer 0.9.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-07-02 12:51+0000\n"
+"MIME-Version: 1.0\n"
+"X-Poedit-Basepath: ../../..\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+
+#: packages/localizer/controller.php:10
+#: packages/localizer/controller.php:32
+msgid "Localizer"
+msgstr ""
+
+#: packages/localizer/controller.php:14
+#: packages/localizer/controller.php:32
+msgid "Allow localizing special items, for instance user and file attributes."
+msgstr ""
+
+#: packages/localizer/controller.php:35
+msgid "translate special items, translation, attribute names, attribute set names, attribute type names, permission names, permission descriptions, access entity type names"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:53
+msgid "Page attributes"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:56
+msgid "User attributes"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:59
+msgid "File attributes"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:92
+msgid "Page"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:95
+msgid "Single page"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:98
+msgid "Stack"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:101
+msgid "Composer page"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:104
+msgid "User"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:107
+msgid "File set"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:110
+msgid "File"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:113
+msgid "Area"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:116
+msgid "Block type"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:119
+msgid "Block"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:122
+msgid "Administration"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:125
+msgid "Site map"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:128
+msgid "MarketPlace newsflow"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:131
+msgid "Basic workflow"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:198
+msgid "Attribute sets names"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:201
+msgid "Attribute key names"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:204
+msgid "Attribute type names"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:207
+msgid "Permission key names"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:210
+msgid "Permission key descriptions"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:213
+msgid "Access entity type names"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:231
+msgid "The translations have been saved."
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:242
+#, php-format
+msgid "Invalid locale identifier: '%s'"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:255
+#, php-format
+msgid "Unable to find the attribute set with id '%s'"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:262
+#, php-format
+msgid "Unable to find the attribute key with id '%s'"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:269
+#, php-format
+msgid "Unable to find the attribute type with id '%s'"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:276
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:283
+#, php-format
+msgid "Unable to find the permission key with id '%s'"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:290
+#, php-format
+msgid "Unable to find the access entity type with id '%s'"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:309
+#, php-format
+msgid "Unable to create folder %s"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:313
+#, php-format
+msgid "Unable to save file %s"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:351
+msgid "Same as English (US)"
+msgstr ""
+
+#: packages/localizer/single_pages/dashboard/system/basics/localizer.php:5
+msgid "Translate special items"
+msgstr ""
+
+#: packages/localizer/single_pages/dashboard/system/basics/localizer.php:8
+msgid "No locales defined."
+msgstr ""
+
+#: packages/localizer/single_pages/dashboard/system/basics/localizer.php:29
+msgid "Items"
+msgstr ""
+
+#: packages/localizer/single_pages/dashboard/system/basics/localizer.php:41
+msgid "Language"
+msgstr ""
+
+#: packages/localizer/single_pages/dashboard/system/basics/localizer.php:63
+msgid "Save"
+msgstr ""
