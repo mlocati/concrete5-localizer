@@ -34,12 +34,6 @@ class LocalizerPackage extends Package {
 			if(is_object($ak)) {
 				$sp->setAttribute($ak, t('translate special items, translation, attribute names, attribute set names, attribute type names, permission names, permission descriptions, access entity type names'));
 			}
-			/* Under dashboard/system the pages don't have icons.
-			$ak = CollectionAttributeKey::getByHandle('icon_dashboard');
-			if(is_object($ak)) {
-				$sp->setAttribute($ak, 'icon-font');
-			}
-			*/
 		}
 	}
 
