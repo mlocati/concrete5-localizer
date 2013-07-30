@@ -8,6 +8,7 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 	const TRANSLATE_PERMISSIONKEY_NAME = true;
 	const TRANSLATE_PERMISSIONKEY_DESCRIPTION = true;
 	const TRANSLATE_PERMISSIONACCESSENTITYTYPE_NAME = true;
+	const TRANSLATE_JOBSET_NAME = true;
 
 	protected static function getLocales() {
 		$locales = array();
@@ -152,7 +153,11 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 				$permissionAccessEntityTypeNames[$accessEntityType->getAccessEntityTypeID()]['source'] = $accessEntityType->getAccessEntityTypeName();
 			}
 			uasort($permissionAccessEntityTypeNames, array(__CLASS__, 'sortBy_source'));
-			$permissionAccessEntityTypes = array();
+			$jobSetNames = array();
+			foreach(JobSet::getList() as $jobSet) {
+				$jobSetNames[$jobSet->getJobSetID()]['source'] = $jobSet->getJobSetName();
+			}
+			uasort($jobSetNames, array(__CLASS__, 'sortBy_source'));
 			$curLocale = Localization::activeLocale();
 			if($curLocale != $locale) {
 				Localization::changeLocale($locale);
@@ -189,6 +194,10 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 				$localized = isset($_POST["PermissionAccessEntityTypeName_$accessEntityTypeID"]) ? $this->post("PermissionAccessEntityTypeName_$accessEntityTypeID") : tc('PermissionAccessEntityTypeName', $permissionAccessEntityTypeNames[$accessEntityTypeID]['source']);
 				$permissionAccessEntityTypeNames[$accessEntityTypeID]['translated'] = ($localized == $permissionAccessEntityTypeNames[$accessEntityTypeID]['source']) ? '' : $localized;
 			}
+			foreach(array_keys($jobSetNames) as $jobSetID) {
+				$localized = isset($_POST["JobSetName_$jobSetID"]) ? $this->post("JobSetName__$jobSetID") : tc('JobSetName', $jobSetNames[$jobSetID]['source']);
+				$jobSetNames[$jobSetID]['translated'] = ($localized == $jobSetNames[$jobSetID]['source']) ? '' : $localized;
+			}
 			if($curLocale != $locale) {
 				Localization::changeLocale($curLocale);
 			}
@@ -211,6 +220,9 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 			}
 			if(self::TRANSLATE_PERMISSIONACCESSENTITYTYPE_NAME) {
 				$translationTables['PermissionAccessEntityTypeName'] = array('name' => t('Access entity type names'), 'rows' => self::buildTranslationRows('PermissionAccessEntityTypeName', $permissionAccessEntityTypeNames));
+			}
+			if(self::TRANSLATE_JOBSET_NAME) {
+				$translationTables['JobSetName'] = array('name' => t('Job set names'), 'rows' => self::buildTranslationRows('JobSetName', $jobSetNames));
 			}
 			$this->set('translationTables', $translationTables);
 			$currentTable = $this->post('currentTable');
@@ -290,6 +302,13 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 										throw new Exception(t("Unable to find the access entity type with id '%s'", $id));
 									}
 									$translationFileHelper->add($pt->getAccessEntityTypeName(), $translated, $context);
+									break;
+								case 'JobSetName':
+									$js = JobSet::getByID($id);
+									if((!is_object($js)) || $js->isError()) {
+										throw new Exception(t("Unable to find the job set with id '%s'", $id));
+									}
+									$translationFileHelper->add($js->getJobSetName(), $translated, $context);
 									break;
 							}
 						}
