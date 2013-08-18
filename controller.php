@@ -3,7 +3,7 @@
 class LocalizerPackage extends Package {
 
 	protected $pkgHandle = 'localizer';
-	protected $appVersionRequired = '5.6.1.3';
+	protected $appVersionRequired = '5.6.2';
 	protected $pkgVersion = '0.9.1';
 
 	public function getPackageName() {
