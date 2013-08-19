@@ -3,7 +3,7 @@
 class LocalizerHelper {
 
 	public function getLocalizationFilename($locale) {
-		$folder = defined('DIR_FILES_LOCALIZER') ? DIR_FILES_LOCALIZER : DIR_BASE . '/files/localizer';
+		$folder = defined('DIR_FILES_LOCALIZER') ? DIR_FILES_LOCALIZER : (DIR_BASE . '/files/localizer');
 		return $folder . "/$locale.mo";
 		
 	}
