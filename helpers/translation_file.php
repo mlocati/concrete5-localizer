@@ -95,7 +95,19 @@ class TranslationFileHelper {
 		$mo .= $originalStrings;
 		// Write translation strings
 		$mo .= $translationStrings;
-		return @file_put_contents($filename, $mo) ? true : false;
+		if(is_file($filename)) {
+			$hFile = @fopen($filename, 'w');
+			if($hFile === false) {
+				return false;
+			}
+			fclose($hFile);
+		}
+		Loader::helper('file')->append($filename, $mo);
+		if(!filesize($filename)) {
+			@unlink($filename);
+			return false;
+		}
+		return true;
 	}
 
 }
