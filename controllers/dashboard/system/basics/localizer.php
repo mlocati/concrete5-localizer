@@ -328,10 +328,14 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 								throw new Exception(t('Unable to create folder %s', $foldername));
 							}
 						}
+						$emptyIndex = $foldername . '/index.html';
+						if(!is_file($emptyIndex)) {
+							Loader::helper('file')->append($emptyIndex, '');
+						}
 						if(!$translationFileHelper->save($filename)) {
 							throw new Exception(t('Unable to save file %s', $filename));
 						}
-						@chmod($filename, 0700);
+						//@chmod($filename, 0700);
 						$currentLocale = Localization::activeLocale();
 						if($currentLocale == $locale) {
 							Localization::changeLocale('en_US');
