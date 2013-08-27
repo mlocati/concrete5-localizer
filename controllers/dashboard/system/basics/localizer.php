@@ -2,14 +2,6 @@
 
 class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 
-	const TRANSLATE_ATTRIBUTESET_NAME = true;
-	const TRANSLATE_ATTRIBUTEKEY_NAME = true;
-	const TRANSLATE_ATTRIBUTETYPE_NAME = true;
-	const TRANSLATE_PERMISSIONKEY_NAME = true;
-	const TRANSLATE_PERMISSIONKEY_DESCRIPTION = true;
-	const TRANSLATE_PERMISSIONACCESSENTITYTYPE_NAME = true;
-	const TRANSLATE_JOBSET_NAME = true;
-
 	protected static function getLocales() {
 		$locales = array();
 		$languages = Localization::getAvailableInterfaceLanguages();
@@ -29,6 +21,18 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 		return $locales;
 	}
 
+	public function translationEnabled($context) {
+		switch($context) {
+			case 'GroupName':
+			case 'GroupDescription':
+			case 'GroupSetName':
+				if(version_compare(APP_VERSION, '5.6.2') <= 0) {
+					return false;
+				}
+				break;
+		}
+		return true;
+	}
 	public function view() {
 		Loader::library('3rdparty/Zend/Locale');
 		Loader::library('3rdparty/Zend/Locale/Data');
@@ -158,6 +162,21 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 				$jobSetNames[$jobSet->getJobSetID()]['source'] = $jobSet->getJobSetName();
 			}
 			uasort($jobSetNames, array(__CLASS__, 'sortBy_source'));
+			if($this->translationEnabled('GroupName') || $this->translationEnabled('GroupDescription')) {
+				$gl = new GroupList(null, false, true);
+				$groupNames = array();
+				$groupDescriptions = array();
+				foreach($gl->getGroupList() as $g) {
+					$groupNames[$g->getGroupID()]['source'] = $g->getGroupName();
+					$groupDescriptions[$g->getGroupID()]['source'] = $g->getGroupDescription();
+				}
+			}
+			if($this->translationEnabled('GroupSetName')) {
+				$groupSetNames = array();
+				foreach(GroupSet::getList() as $gs) {
+					$groupSetNames[$gs->getGroupSetID()]['source'] = $gs->getGroupSetName();
+				}
+			}
 			$curLocale = Localization::activeLocale();
 			if($curLocale != $locale) {
 				Localization::changeLocale($locale);
@@ -198,31 +217,58 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 				$localized = isset($_POST["JobSetName_$jobSetID"]) ? $this->post("JobSetName__$jobSetID") : tc('JobSetName', $jobSetNames[$jobSetID]['source']);
 				$jobSetNames[$jobSetID]['translated'] = ($localized == $jobSetNames[$jobSetID]['source']) ? '' : $localized;
 			}
+			if($this->translationEnabled('GroupName')) {
+				foreach(array_keys($groupNames) as $gID) {
+					$localized = isset($_POST["GroupName_$gID"]) ? $this->post("GroupName_$gID") : tc('GroupName', $groupNames[$gID]['source']);
+					$groupNames[$gID]['translated'] = ($localized == $groupNames[$gID]['source']) ? '' : $localized;
+				}
+			}
+			if($this->translationEnabled('GroupDescription')) {
+				foreach(array_keys($groupDescriptions) as $gID) {
+					$localized = isset($_POST["GroupDescription_$gID"]) ? $this->post("GroupDescription_$gID") : tc('GroupDescription', $groupDescriptions[$gID]['source']);
+					$groupDescriptions[$gID]['translated'] = ($localized == $groupDescriptions[$gID]['source']) ? '' : $localized;
+				}
+			}
+			if($this->translationEnabled('GroupSetName')) {
+				foreach(array_keys($groupSetNames) as $gsID) {
+					$localized = isset($_POST["GroupSetName_$gsID"]) ? $this->post("GroupSetName_$gsID") : tc('GroupSetName', $groupSetNames[$gsID]['source']);
+					$groupSetNames[$gsID]['translated'] = ($localized == $groupSetNames[$gsID]['source']) ? '' : $localized;
+				}
+			}
 			if($curLocale != $locale) {
 				Localization::changeLocale($curLocale);
 			}
 			$this->set('locale', $locale);
 			$translationTables = array();
-			if(self::TRANSLATE_ATTRIBUTESET_NAME) {
+			if($this->translationEnabled('AttributeSetName')) {
 				$translationTables['AttributeSetName'] = array('name' => t('Attribute sets names'), 'rows' => self::buildTranslationRows('AttributeSetName', $attributeSetNames, $attributeCategories));
 			}
-			if(self::TRANSLATE_ATTRIBUTEKEY_NAME) {
+			if($this->translationEnabled('AttributeKeyName')) {
 				$translationTables['AttributeKeyName'] = array('name' => t('Attribute key names'), 'rows' => self::buildTranslationRows('AttributeKeyName', $attributeKeyNames, $attributeCategories));
 			}
-			if(self::TRANSLATE_ATTRIBUTETYPE_NAME) {
+			if($this->translationEnabled('AttributeTypeName')) {
 				$translationTables['AttributeTypeName'] = array('name' => t('Attribute type names'), 'rows' => self::buildTranslationRows('AttributeTypeName', $attributeTypeNames));
 			}
-			if(self::TRANSLATE_PERMISSIONKEY_NAME) {
+			if($this->translationEnabled('PermissionKeyName')) {
 				$translationTables['PermissionKeyName'] = array('name' => t('Permission key names'), 'rows' => self::buildTranslationRows('PermissionKeyName', $permissionKeyNames, $permissionCategories));
 			}
-			if(self::TRANSLATE_PERMISSIONKEY_DESCRIPTION) {
+			if($this->translationEnabled('PermissionKeyDescription')) {
 				$translationTables['PermissionKeyDescription'] = array('name' => t('Permission key descriptions'), 'rows' => self::buildTranslationRows('PermissionKeyDescription', $permissionKeyDescriptions, $permissionCategories));
 			}
-			if(self::TRANSLATE_PERMISSIONACCESSENTITYTYPE_NAME) {
+			if($this->translationEnabled('PermissionAccessEntityTypeName')) {
 				$translationTables['PermissionAccessEntityTypeName'] = array('name' => t('Access entity type names'), 'rows' => self::buildTranslationRows('PermissionAccessEntityTypeName', $permissionAccessEntityTypeNames));
 			}
-			if(self::TRANSLATE_JOBSET_NAME) {
+			if($this->translationEnabled('JobSetName')) {
 				$translationTables['JobSetName'] = array('name' => t('Job set names'), 'rows' => self::buildTranslationRows('JobSetName', $jobSetNames));
+			}
+			if($this->translationEnabled('GroupName')) {
+				$translationTables['GroupName'] = array('name' => t('User group names'), 'rows' => self::buildTranslationRows('GroupName', $groupNames));
+			}
+			if($this->translationEnabled('GroupDescription')) {
+				$translationTables['GroupDescription'] = array('name' => t('User group descriptions'), 'rows' => self::buildTranslationRows('GroupDescription', $groupDescriptions));
+			}
+			if($this->translationEnabled('GroupSetName')) {
+				$translationTables['GroupSetName'] = array('name' => t('User group set names'), 'rows' => self::buildTranslationRows('GroupSetName', $groupSetNames));
 			}
 			$this->set('translationTables', $translationTables);
 			$currentTable = $this->post('currentTable');
@@ -309,6 +355,27 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 										throw new Exception(t("Unable to find the job set with id '%s'", $id));
 									}
 									$translationFileHelper->add($js->getJobSetName(), $translated, $context);
+									break;
+								case 'GroupName':
+									$g = Group::getByID($id);
+									if((!is_object($g)) || $g->isError()) {
+										throw new Exception(t("Unable to find the users group with id '%s'", $id));
+									}
+									$translationFileHelper->add($g->getGroupName(), $translated, $context);
+									break;
+								case 'GroupDescription':
+									$g = Group::getByID($id);
+									if((!is_object($g)) || $g->isError()) {
+										throw new Exception(t("Unable to find the users group with id '%s'", $id));
+									}
+									$translationFileHelper->add($g->getGroupDescription(), $translated, $context);
+									break;
+								case 'GroupSetName':
+									$gs = GroupSet::getByID($id);
+									if((!is_object($gs)) || $gs->isError()) {
+										throw new Exception(t("Unable to find the set of users group with id '%s'", $id));
+									}
+									$translationFileHelper->add($gs->getGroupSetName(), $translated, $context);
 									break;
 							}
 						}
