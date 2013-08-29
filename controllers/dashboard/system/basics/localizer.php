@@ -26,7 +26,7 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 			case 'GroupName':
 			case 'GroupDescription':
 			case 'GroupSetName':
-				if(version_compare(APP_VERSION, '5.6.2') <= 0) {
+				if(version_compare(APP_VERSION, '5.6.2.1') <= 0) {
 					return false;
 				}
 				break;
