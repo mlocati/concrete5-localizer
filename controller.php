@@ -4,7 +4,7 @@ class LocalizerPackage extends Package {
 
 	protected $pkgHandle = 'localizer';
 	protected $appVersionRequired = '5.6.2';
-	protected $pkgVersion = '0.9.3';
+	protected $pkgVersion = '0.9.4';
 
 	public function getPackageName() {
 		return t('Localizer');
@@ -26,13 +26,22 @@ class LocalizerPackage extends Package {
 	}
 
 	private function installOrUpgrade($pkg, $upgradeFromVersion = '') {
-		$sp = Page::getByPath('dashboard/system/basics/localizer');
+		$sp = Page::getByPath('/dashboard/system/basics/localizer');
 		if((!is_object($sp)) || $sp->isError()) {
-			$sp = SinglePage::add('dashboard/system/basics/localizer', $pkg);
+			$sp = SinglePage::add('/dashboard/system/basics/localizer', $pkg);
 			$sp->update(array('cName' => t('Localizer'), 'cDescription' => t('Allow localizing special items, for instance user and file attributes.')));
 			$ak = CollectionAttributeKey::getByHandle('meta_keywords');
 			if(is_object($ak)) {
 				$sp->setAttribute($ak, t('translate special items, translation, attribute names, attribute set names, attribute type names, permission names, permission descriptions, access entity type names'));
+			}
+		}
+		$sp = Page::getByPath('/dashboard/system/basics/localizer/options');
+		if((!is_object($sp)) || $sp->isError()) {
+			$sp = SinglePage::add('/dashboard/system/basics/localizer/options', $pkg);
+			$sp->update(array('cName' => t('Localizer options'), 'cDescription' => t('Set the Localizer options.')));
+			$ak = CollectionAttributeKey::getByHandle('meta_keywords');
+			if(is_object($ak)) {
+				$sp->setAttribute($ak, t('localizer options, options localizer'));
 			}
 		}
 	}

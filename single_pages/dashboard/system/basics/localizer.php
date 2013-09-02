@@ -10,46 +10,51 @@ if(empty($locales)) {
 else {
 	$ih = Loader::helper('concrete/interface');
 	$jh = Loader::helper('json');
+	$lh = Loader::helper('localizer', 'localizer');
 	?>
 	<script type="text/javascript">
 		function updateCurrentTable() {
 			$(".tsi-table").hide();
-			$("#tsi-table-" + $("#tsi-which").val()).show();
+			var tsi = $("#tsi-which").val();
+			$("#tsi-table-" + tsi).show();
+			$('#currentTable').val(tsi);
 		}
 		$(document).ready(function() {
 			updateCurrentTable();
 		});
 	</script>
-	<form method="post" id="user-translate-form" action="<?php echo $this->action('update') ?>" class="form-horizontal">
-		<?php echo $this->controller->token->output('update_translations')?>
-		<div class="ccm-pane-options">
-			<div class="row">
-				<div class="span5">
-					<label>
-						<?php echo t('Items'); ?>
-						<select id="tsi-which" name="currentTable" onchange="updateCurrentTable()">
-							<?php
-							foreach($translationTables as $ttCode => $tt) {
-								?><option value="<?php echo h($ttCode); ?>"<?php echo ($ttCode == $currentTable) ? ' selected="selected"' : ''; ?>><?php echo h($tt['name']); ?></option><?php
-							}
-							?>
-						</select>
-					</label>
-				</div>
-				<div class="span5">
-					<label>
-						<?php echo t('Language'); ?>
-						<select name="locale" onchange="window.location.href = <?php echo h($jh->encode(View::url('/dashboard/system/basics/localizer/?locale='))); ?> + encodeURIComponent(this.value)"><?php
-						foreach($locales as $localeID => $localeName) {
-							?><option value="<?php echo h($localeID); ?>"<?php echo ($localeID == $locale) ? ' selected="selected"' : ''; ?>><?php echo h($localeName); ?></option><?php
+	<div class="ccm-pane-options">
+		<div class="row">
+			<div class="span5">
+				<label>
+					<?php echo t('Items'); ?>
+					<select id="tsi-which" name="currentTable" onchange="updateCurrentTable()">
+						<?php
+						foreach($translationTables as $ttCode => $tt) {
+							?><option value="<?php echo h($ttCode); ?>"<?php echo ($ttCode == $currentTable) ? ' selected="selected"' : ''; ?>><?php echo h($tt['name']); ?></option><?php
 						}
-						?></select>
-					</label>
-				</div>
+						?>
+					</select>
+				</label>
+			</div>
+			<div class="span5">
+				<label>
+					<?php echo t('Language'); ?>
+					<select onchange="window.location.href = <?php echo h($jh->encode(View::url('/dashboard/system/basics/localizer/?locale='))); ?> + encodeURIComponent(this.value)"><?php
+					foreach($locales as $localeID => $localeName) {
+						?><option value="<?php echo h($localeID); ?>"<?php echo ($localeID == $locale) ? ' selected="selected"' : ''; ?>><?php echo h($localeName); ?></option><?php
+					}
+					?></select>
+				</label>
 			</div>
 		</div>
-		<div class="ccm-pane-body">
+	</div>
+	<div class="ccm-pane-body">
+		<form method="post" id="user-translate-form" action="<?php echo $this->action('update') ?>" class="form-horizontal">
+			<input type="hidden" name="currentTable" id="currentTable" value="<?php echo h($currentTable); ?>">
+			<input type="hidden" name="locale" value="<?php echo h($locale); ?>">
 			<?php
+			echo $this->controller->token->output('update_translations');
 			foreach($translationTables as $ttCode => $tt) {
 				?><table class="table table-striped table-condensed tsi-table" style="display:none" id="tsi-table-<?php echo h($ttCode); ?>">
 					<tbody>
@@ -58,11 +63,13 @@ else {
 				</table><?php
 			}
 			?>
-		</div>
-		<div class="ccm-pane-footer">
-			<? echo $ih->submit(t('Save'), 'user-translate-form', 'right', 'primary'); ?>
-		</div>
-	</form><?php
+		</form>
+	</div>
+	<div class="ccm-pane-footer">
+		<?php echo $ih->button(t('Options'), '/dashboard/system/basics/localizer/options/', 'left'); ?>
+		<?php echo $ih->button_js(t('Save'), "if(!this.already){this.already = true; $('#user-translate-form').submit(); }", 'right', 'primary'); ?>
+	</div>
+	<?php
 }
 
 echo $dh->getDashboardPaneFooterWrapper(false);
