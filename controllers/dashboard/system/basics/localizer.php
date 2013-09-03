@@ -43,6 +43,10 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 			$attributeCategories = array();
 			$attributeSetNames = array();
 			$attributeKeyNames = array();
+			$selectAttributeValues = null;
+			if($lh->getContextEnabled('SelectAttributeValue')) {
+				$selectAttributeValues = array();
+			}
 			foreach(AttributeKeyCategory::getList() as $akc) {
 				$akcHandle = $akc->getAttributeKeyCategoryHandle();
 				switch($akcHandle) {
@@ -68,6 +72,13 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 				}
 				foreach(AttributeKey::getList($akcHandle) as $ak) {
 					$attributeKeyNames[$akcHandle][$ak->getAttributeKeyID()]['source'] = $ak->getAttributeKeyName();
+					if(is_array($selectAttributeValues)) {
+						if($ak->getAttributeType()->getAttributeTypeHandle() == 'select') {
+							foreach($ak->getController()->getOptions() as $option) {
+								$selectAttributeValues[$akcHandle][$option->getSelectAttributeOptionID()]['source'] = $option->getSelectAttributeOptionValue(false);
+							}
+						}
+					}
 				}
 				if(isset($attributeKeyNames[$akcHandle])) {
 					uasort($attributeKeyNames[$akcHandle], array(__CLASS__, 'sortBy_source'));
@@ -227,6 +238,14 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 					$groupSetNames[$gsID]['translated'] = ($localized == $groupSetNames[$gsID]['source']) ? '' : $localized;
 				}
 			}
+			if(is_array($selectAttributeValues)) {
+				foreach(array_keys($selectAttributeValues) as $akcHandle) {
+					foreach(array_keys($selectAttributeValues[$akcHandle]) as $savID) {
+						$localized = isset($_POST["SelectAttributeValue_$savID"]) ? $this->post("SelectAttributeValue_$savID") : tc('SelectAttributeValue', $selectAttributeValues[$akcHandle][$savID]['source']);
+						$selectAttributeValues[$akcHandle][$savID]['translated'] = ($localized == $selectAttributeValues[$akcHandle][$savID]['source']) ? '' : $localized;
+					}
+				}
+			}
 			if($curLocale != $locale) {
 				Localization::changeLocale($curLocale);
 			}
@@ -261,6 +280,9 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 			}
 			if($lh->getContextEnabled('GroupSetName')) {
 				$translationTables['GroupSetName'] = array('name' => t('User group set names'), 'rows' => self::buildTranslationRows('GroupSetName', $groupSetNames));
+			}
+			if($lh->getContextEnabled('SelectAttributeValue')) {
+				$translationTables['SelectAttributeValue'] = array('name' => t('Values of the select attributes'), 'rows' => self::buildTranslationRows('SelectAttributeValue', $selectAttributeValues, $attributeCategories));
 			}
 			$this->set('translationTables', $translationTables);
 			$currentTable = $this->post('currentTable');
@@ -370,6 +392,13 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 											throw new Exception(t("Unable to find the set of users group with id '%s'", $id));
 										}
 										$translationFileHelper->add($gs->getGroupSetName(), $translated, $context);
+										break;
+									case 'SelectAttributeValue':
+										$sav = SelectAttributeTypeOption::getByID($id);
+										if((!is_object($sav)) || $sav->isError()) {
+											throw new Exception(t("Unable to find the select option value with id '%s'", $id));
+										}
+										$translationFileHelper->add($sav->getSelectAttributeOptionValue(false), $translated, $context);
 										break;
 								}
 							}

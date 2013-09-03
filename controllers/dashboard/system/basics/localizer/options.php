@@ -13,7 +13,8 @@ class DashboardSystemBasicsLocalizerOptionsController extends DashboardBaseContr
 			'JobSetName' => t('Job set names'),
 			'GroupName' => t('User group names'),
 			'GroupDescription' => t('User group descriptions'),
-			'GroupSetName' => t('User group set names')
+			'GroupSetName' => t('User group set names'),
+			'SelectAttributeValue' => t('Values of the select attributes')
 		);
 	}
 	public function view() {
