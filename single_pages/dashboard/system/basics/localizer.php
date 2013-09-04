@@ -66,7 +66,7 @@ else {
 		</form>
 	</div>
 	<div class="ccm-pane-footer">
-		<?php echo $ih->button(t('Options'), '/dashboard/system/basics/localizer/options/', 'left'); ?>
+		<?php echo $ih->button(t('Options'), DIR_REL . '/' . DISPATCHER_FILENAME . '/dashboard/system/basics/localizer/options/', 'left'); ?>
 		<?php echo $ih->button_js(t('Save'), "if(!this.already){this.already = true; $('#user-translate-form').submit(); }", 'right', 'primary'); ?>
 	</div>
 	<?php
