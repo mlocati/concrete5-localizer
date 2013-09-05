@@ -21,7 +21,7 @@ echo $dh->getDashboardPaneHeaderWrapper(t('Localizer options'), false, 'span12',
 								}
 								else {
 									?>
-									<label class="radio inline"><input type="radio" name="enable_<?php echo $translationTable['context']; ?>" value="1" <?php echo $translationTable['selected'] ? ' checked' : ''; ?>> <?php echo t('enabled')?></label> 
+									<label class="radio inline"><input type="radio" name="enable_<?php echo $translationTable['context']; ?>" value="1" <?php echo $translationTable['selected'] ? ' checked' : ''; ?>> <?php echo t('enabled')?></label>
 									<label class="radio inline"><input type="radio" name="enable_<?php echo $translationTable['context']; ?>" value="0" <?php echo $translationTable['selected'] ? '' : ' checked'; ?>> <?php echo t('disabled')?></label>
 									<?php
 								}

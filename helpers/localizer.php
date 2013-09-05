@@ -27,7 +27,7 @@ class LocalizerHelper {
 		}
 		return $pkg;
 	}
-	
+
 	public function getConfigured() {
 		return ($this->getPackage()->config('configured') === 'yes') ? true : false;
 	}
@@ -39,7 +39,7 @@ class LocalizerHelper {
 			$this->getPackage()->clearConfig('configured');
 		}
 	}
-	
+
 	public function getContextEnabled($context) {
 		$vMin = $this->getMinAppVersionForContext($context);
 		if(version_compare(APP_VERSION, $vMin) < 0) {

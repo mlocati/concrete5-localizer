@@ -23,7 +23,7 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 
 	public function view() {
 		$lh = Loader::helper('localizer', 'localizer');
-                $db = Loader::db();
+		$db = Loader::db();
 		if(!$lh->getConfigured()) {
 			$this->redirect('/dashboard/system/basics/localizer/options/');
 		}
@@ -45,18 +45,19 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 			$attributeSetNames = array();
 			$attributeKeyNames = array();
 			$selectAttributeValues = null;
-                        $areaNames = null;
+			$areaNames = null;
 			if($lh->getContextEnabled('SelectAttributeValue')) {
 				$selectAttributeValues = array();
 			}
 			if($lh->getContextEnabled('AreaName')) {
 				$areaNames = array();
-                                $result = $db->Execute('SELECT DISTINCT arHandle FROM Areas ORDER BY arHandle');
+				$result = $db->Execute('SELECT DISTINCT arHandle FROM Areas ORDER BY arHandle');
 				while ($row = $result->FetchRow()) {
-					$areaNames[$row['arHandle']]['source'] = $row['arHandle'];
-                                }
-                                uasort($areaNames, array(__CLASS__, 'sortBy_source'));
-			}                        
+					$areaNames[self::text2fieldName($row['arHandle'])]['source'] = $row['arHandle'];
+				}
+				$result->Close();
+				uasort($areaNames, array(__CLASS__, 'sortBy_source'));
+			}
 			foreach(AttributeKeyCategory::getList() as $akc) {
 				$akcHandle = $akc->getAttributeKeyCategoryHandle();
 				switch($akcHandle) {
@@ -175,7 +176,7 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 				$jobSetNames[$jobSet->getJobSetID()]['source'] = $jobSet->getJobSetName();
 			}
 			uasort($jobSetNames, array(__CLASS__, 'sortBy_source'));
-                        if($lh->getContextEnabled('GroupName') || $lh->getContextEnabled('GroupDescription')) {
+			if($lh->getContextEnabled('GroupName') || $lh->getContextEnabled('GroupDescription')) {
 				$gl = new GroupList(null, false, true);
 				$groupNames = array();
 				$groupDescriptions = array();
@@ -210,10 +211,12 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 				$localized = isset($_POST["AttributeTypeName_$atID"]) ? $this->post("AttributeTypeName_$atID") : tc('AttributeTypeName', $attributeTypeNames[$atID]['source']);
 				$attributeTypeNames[$atID]['translated'] = ($localized == $attributeTypeNames[$atID]['source']) ? '' : $localized;
 			}
-			foreach(array_keys($areaNames) as $arHandle) {
-				$localized = isset($_POST["AreaName_$arHandle"]) ? $this->post("AreaName_$arHandle") : tc('AreaName', $attributeTypeNames[$arHandle]['source']);
-				$areaNames[$arHandle]['translated'] = ($localized == $attributeTypeNames[$arHandle]['source']) ? '' : $localized;
-			}                        
+			if($lh->getContextEnabled('AreaName')) {
+				foreach(array_keys($areaNames) as $arKey) {
+					$localized = isset($_POST["AreaName_$arKey"]) ? $this->post("AreaName_$arKey") : tc('AreaName', $areaNames[$arKey]['source']);
+					$areaNames[$arKey]['translated'] = ($localized == $areaNames[$arKey]['source']) ? '' : $localized;
+				}
+			}
 			foreach(array_keys($permissionKeyNames) as $pkcHandle) {
 				foreach(array_keys($permissionKeyNames[$pkcHandle]) as $pkID) {
 					$localized = isset($_POST["PermissionKeyName_$pkID"]) ? $this->post("PermissionKeyName_$pkID") : tc('PermissionKeyName', $permissionKeyNames[$pkcHandle][$pkID]['source']);
@@ -335,90 +338,95 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 					$lh = Loader::helper('localizer', 'localizer');
 					foreach($this->post() as $name => $translated) {
 						$translated = is_string($translated) ? trim($translated) : '';
-						if(strlen($translated) && preg_match('/^([a-zA-Z]+)_(.*)$/', $name, $match)) {
-							$context = $match[1];                                                        
+						if(strlen($translated) && preg_match('/^([a-zA-Z]+)_(.+)$/', $name, $match)) {
+							$context = $match[1];
 							if($lh->getContextEnabled($context)) {
-								$id = $match[2];
+								$id = preg_match('/^[1-9][0-9]*$/', $match[2]) ? intval($match[2]) : null;
+								if(!is_null($id)) {
+									switch($context) {
+										case 'AttributeSetName':
+											$as = AttributeSet::getByID($id);
+											if((!is_object($as)) || $as->isError()) {
+												throw new Exception(t("Unable to find the attribute set with id '%s'", $id));
+											}
+											$translationFileHelper->add($as->getAttributeSetName(), $translated, $context);
+											break;
+										case 'AttributeKeyName':
+											$ak = AttributeKey::getInstanceByID($id);
+											if((!is_object($ak)) || $ak->isError()) {
+												throw new Exception(t("Unable to find the attribute key with id '%s'", $id));
+											}
+											$translationFileHelper->add($ak->getAttributeKeyName(), $translated, $context);
+											break;
+										case 'AttributeTypeName':
+											$at = AttributeType::getByID($id);
+											if((!is_object($at)) || $at->isError()) {
+												throw new Exception(t("Unable to find the attribute type with id '%s'", $id));
+											}
+											$translationFileHelper->add($at->getAttributeTypeName(), $translated, $context);
+											break;
+										case 'PermissionKeyName':
+											$pk = PermissionKey::getByID($id);
+											if((!is_object($pk)) || $pk->isError()) {
+												throw new Exception(t("Unable to find the permission key with id '%s'", $id));
+											}
+											$translationFileHelper->add($pk->getPermissionKeyName(), $translated, $context);
+											break;
+										case 'PermissionKeyDescription':
+											$pk = PermissionKey::getByID($id);
+											if((!is_object($pk)) || $pk->isError()) {
+												throw new Exception(t("Unable to find the permission key with id '%s'", $id));
+											}
+											$translationFileHelper->add($pk->getPermissionKeyDescription(), $translated, $context);
+											break;
+										case 'PermissionAccessEntityTypeName':
+											$pt = PermissionAccessEntityType::getByID($id);
+											if((!is_object($pt)) || $pt->isError()) {
+												throw new Exception(t("Unable to find the access entity type with id '%s'", $id));
+											}
+											$translationFileHelper->add($pt->getAccessEntityTypeName(), $translated, $context);
+											break;
+										case 'JobSetName':
+											$js = JobSet::getByID($id);
+											if((!is_object($js)) || $js->isError()) {
+												throw new Exception(t("Unable to find the job set with id '%s'", $id));
+											}
+											$translationFileHelper->add($js->getJobSetName(), $translated, $context);
+											break;
+										case 'GroupName':
+											$g = Group::getByID($id);
+											if((!is_object($g)) || $g->isError()) {
+												throw new Exception(t("Unable to find the users group with id '%s'", $id));
+											}
+											$translationFileHelper->add($g->getGroupName(), $translated, $context);
+											break;
+										case 'GroupDescription':
+											$g = Group::getByID($id);
+											if((!is_object($g)) || $g->isError()) {
+												throw new Exception(t("Unable to find the users group with id '%s'", $id));
+											}
+											$translationFileHelper->add($g->getGroupDescription(), $translated, $context);
+											break;
+										case 'GroupSetName':
+											$gs = GroupSet::getByID($id);
+											if((!is_object($gs)) || $gs->isError()) {
+												throw new Exception(t("Unable to find the set of users group with id '%s'", $id));
+											}
+											$translationFileHelper->add($gs->getGroupSetName(), $translated, $context);
+											break;
+										case 'SelectAttributeValue':
+											$sav = SelectAttributeTypeOption::getByID($id);
+											if((!is_object($sav)) || $sav->isError()) {
+												throw new Exception(t("Unable to find the select option value with id '%s'", $id));
+											}
+											$translationFileHelper->add($sav->getSelectAttributeOptionValue(false), $translated, $context);
+											break;
+									}
+								}
+								$text = self::fieldName2text($match[2]);
 								switch($context) {
-									case 'AttributeSetName':
-										$as = AttributeSet::getByID($id);
-										if((!is_object($as)) || $as->isError()) {
-											throw new Exception(t("Unable to find the attribute set with id '%s'", $id));
-										}
-										$translationFileHelper->add($as->getAttributeSetName(), $translated, $context);
-										break;
-									case 'AttributeKeyName':
-										$ak = AttributeKey::getInstanceByID($id);
-										if((!is_object($ak)) || $ak->isError()) {
-											throw new Exception(t("Unable to find the attribute key with id '%s'", $id));
-										}
-										$translationFileHelper->add($ak->getAttributeKeyName(), $translated, $context);
-										break;
-									case 'AttributeTypeName':
-										$at = AttributeType::getByID($id);
-										if((!is_object($at)) || $at->isError()) {
-											throw new Exception(t("Unable to find the attribute type with id '%s'", $id));
-										}
-										$translationFileHelper->add($at->getAttributeTypeName(), $translated, $context);
-										break;
 									case 'AreaName':
-										$translationFileHelper->add($id, $translated, $context);
-										break;
-									case 'PermissionKeyName':
-										$pk = PermissionKey::getByID($id);
-										if((!is_object($pk)) || $pk->isError()) {
-											throw new Exception(t("Unable to find the permission key with id '%s'", $id));
-										}
-										$translationFileHelper->add($pk->getPermissionKeyName(), $translated, $context);
-										break;
-									case 'PermissionKeyDescription':
-										$pk = PermissionKey::getByID($id);
-										if((!is_object($pk)) || $pk->isError()) {
-											throw new Exception(t("Unable to find the permission key with id '%s'", $id));
-										}
-										$translationFileHelper->add($pk->getPermissionKeyDescription(), $translated, $context);
-										break;
-									case 'PermissionAccessEntityTypeName':
-										$pt = PermissionAccessEntityType::getByID($id);
-										if((!is_object($pt)) || $pt->isError()) {
-											throw new Exception(t("Unable to find the access entity type with id '%s'", $id));
-										}
-										$translationFileHelper->add($pt->getAccessEntityTypeName(), $translated, $context);
-										break;
-									case 'JobSetName':
-										$js = JobSet::getByID($id);
-										if((!is_object($js)) || $js->isError()) {
-											throw new Exception(t("Unable to find the job set with id '%s'", $id));
-										}
-										$translationFileHelper->add($js->getJobSetName(), $translated, $context);
-										break;
-									case 'GroupName':
-										$g = Group::getByID($id);
-										if((!is_object($g)) || $g->isError()) {
-											throw new Exception(t("Unable to find the users group with id '%s'", $id));
-										}
-										$translationFileHelper->add($g->getGroupName(), $translated, $context);
-										break;
-									case 'GroupDescription':
-										$g = Group::getByID($id);
-										if((!is_object($g)) || $g->isError()) {
-											throw new Exception(t("Unable to find the users group with id '%s'", $id));
-										}
-										$translationFileHelper->add($g->getGroupDescription(), $translated, $context);
-										break;
-									case 'GroupSetName':
-										$gs = GroupSet::getByID($id);
-										if((!is_object($gs)) || $gs->isError()) {
-											throw new Exception(t("Unable to find the set of users group with id '%s'", $id));
-										}
-										$translationFileHelper->add($gs->getGroupSetName(), $translated, $context);
-										break;
-									case 'SelectAttributeValue':
-										$sav = SelectAttributeTypeOption::getByID($id);
-										if((!is_object($sav)) || $sav->isError()) {
-											throw new Exception(t("Unable to find the select option value with id '%s'", $id));
-										}
-										$translationFileHelper->add($sav->getSelectAttributeOptionValue(false), $translated, $context);
+										$translationFileHelper->add($text, $translated, $context);
 										break;
 								}
 							}
@@ -493,4 +501,11 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 		return strcasecmp($a['source'], $b['source']);
 	}
 
+	private static $textFieldNameMap = array(' ' => '_-SPACE-_');
+	private static function text2fieldName($text) {
+		return str_replace(array_keys(self::$textFieldNameMap), array_values(self::$textFieldNameMap), $text);
+	}
+	private static function fieldName2text($fieldName) {
+		return str_replace(array_values(self::$textFieldNameMap), array_keys(self::$textFieldNameMap), $fieldName);
+	}
 }
