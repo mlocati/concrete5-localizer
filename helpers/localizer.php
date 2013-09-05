@@ -13,6 +13,7 @@ class LocalizerHelper {
 			case 'GroupDescription':
 			case 'GroupSetName':
 			case 'SelectAttributeValue':
+			case 'AreaName':
 				return '5.6.2.2';
 			default:
 				return '5.6.2';
