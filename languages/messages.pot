@@ -1,7 +1,7 @@
 msgid ""
-msgstr "Project-Id-Version: localizer 0.9.4\n"
+msgstr "Project-Id-Version: localizer 0.9.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-02 09:44+0000\n"
+"POT-Creation-Date: 2013-09-05 12:51+0000\n"
 "MIME-Version: 1.0\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -11,6 +11,7 @@ msgstr "Project-Id-Version: localizer 0.9.4\n"
 
 #: packages/localizer/controller.php:10
 #: packages/localizer/controller.php:32
+#: packages/localizer/single_pages/dashboard/system/basics/localizer/options.php:41
 msgid "Localizer"
 msgstr ""
 
@@ -36,199 +37,221 @@ msgstr ""
 msgid "localizer options, options localizer"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:236
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:272
 #: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:7
 msgid "Attribute sets names"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:239
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:275
 #: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:8
 msgid "Attribute key names"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:242
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:278
 #: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:9
 msgid "Attribute type names"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:245
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:284
 #: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:10
 msgid "Permission key names"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:248
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:287
 #: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:11
 msgid "Permission key descriptions"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:251
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:290
 #: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:12
 msgid "Access entity type names"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:254
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:293
 #: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:13
 msgid "Job set names"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:257
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:296
 #: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:14
 msgid "User group names"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:260
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:299
 #: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:15
 msgid "User group descriptions"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:263
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:302
 #: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:16
 msgid "User group set names"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:25
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:305
+#: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:17
+msgid "Values of the select attributes"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:18
+msgid "Area names"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:27
+msgid "Still in development"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:30
 #, php-format
 msgid "Available from concrete5 %s"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:44
+#: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:49
 msgid "The options have been saved."
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:63
+#: packages/localizer/controllers/dashboard/system/basics/localizer/options.php:68
 msgid "Please enable at least one item class to be translated."
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:50
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:65
 msgid "Page attributes"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:53
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:68
 msgid "User attributes"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:56
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:71
 msgid "File attributes"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:89
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:111
 msgid "Page"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:92
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:114
 msgid "Single page"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:95
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:117
 msgid "Stack"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:98
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:120
 msgid "Composer page"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:101
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:123
 msgid "User"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:104
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:126
 msgid "File set"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:107
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:129
 msgid "File"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:110
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:132
 msgid "Area"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:113
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:135
 msgid "Block type"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:116
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:138
 msgid "Block"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:119
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:141
 msgid "Administration"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:122
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:144
 msgid "Site map"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:125
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:147
 msgid "MarketPlace newsflow"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:128
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:150
 msgid "Basic workflow"
 msgstr ""
 
 #: packages/localizer/controllers/dashboard/system/basics/localizer.php:281
+msgid "Area Names"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:323
 msgid "The translations have been saved."
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:292
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:334
 #, php-format
 msgid "Invalid locale identifier: '%s'"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:307
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:350
 #, php-format
 msgid "Unable to find the attribute set with id '%s'"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:314
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:357
 #, php-format
 msgid "Unable to find the attribute key with id '%s'"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:321
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:364
 #, php-format
 msgid "Unable to find the attribute type with id '%s'"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:328
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:335
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:371
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:378
 #, php-format
 msgid "Unable to find the permission key with id '%s'"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:342
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:385
 #, php-format
 msgid "Unable to find the access entity type with id '%s'"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:349
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:392
 #, php-format
 msgid "Unable to find the job set with id '%s'"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:356
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:363
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:399
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:406
 #, php-format
 msgid "Unable to find the users group with id '%s'"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:370
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:413
 #, php-format
 msgid "Unable to find the set of users group with id '%s'"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:390
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:420
+#, php-format
+msgid "Unable to find the select option value with id '%s'"
+msgstr ""
+
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:447
 #, php-format
 msgid "Unable to create folder %s"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:398
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:455
 #, php-format
 msgid "Unable to save file %s"
 msgstr ""
 
-#: packages/localizer/controllers/dashboard/system/basics/localizer.php:436
+#: packages/localizer/controllers/dashboard/system/basics/localizer.php:493
 msgid "Same as English (US)"
 msgstr ""
 
@@ -253,7 +276,7 @@ msgid "Disabled item classes causes translations to be lost!"
 msgstr ""
 
 #: packages/localizer/single_pages/dashboard/system/basics/localizer.php:70
-#: packages/localizer/single_pages/dashboard/system/basics/localizer/options.php:41
+#: packages/localizer/single_pages/dashboard/system/basics/localizer/options.php:42
 msgid "Save"
 msgstr ""
 
