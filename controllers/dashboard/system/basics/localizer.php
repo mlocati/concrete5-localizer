@@ -23,6 +23,7 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 
 	public function view() {
 		$lh = Loader::helper('localizer', 'localizer');
+                $db = Loader::db();
 		if(!$lh->getConfigured()) {
 			$this->redirect('/dashboard/system/basics/localizer/options/');
 		}
@@ -44,9 +45,18 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 			$attributeSetNames = array();
 			$attributeKeyNames = array();
 			$selectAttributeValues = null;
+                        $areaNames = null;
 			if($lh->getContextEnabled('SelectAttributeValue')) {
 				$selectAttributeValues = array();
 			}
+			if($lh->getContextEnabled('AreaName')) {
+				$areaNames = array();
+                                $result = $db->Execute('SELECT DISTINCT arHandle FROM Areas ORDER BY arHandle');
+				while ($row = $result->FetchRow()) {
+					$areaNames[$row['arHandle']]['source'] = $row['arHandle'];
+                                }
+                                uasort($areaNames, array(__CLASS__, 'sortBy_source'));
+			}                        
 			foreach(AttributeKeyCategory::getList() as $akc) {
 				$akcHandle = $akc->getAttributeKeyCategoryHandle();
 				switch($akcHandle) {
@@ -165,7 +175,7 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 				$jobSetNames[$jobSet->getJobSetID()]['source'] = $jobSet->getJobSetName();
 			}
 			uasort($jobSetNames, array(__CLASS__, 'sortBy_source'));
-			if($lh->getContextEnabled('GroupName') || $lh->getContextEnabled('GroupDescription')) {
+                        if($lh->getContextEnabled('GroupName') || $lh->getContextEnabled('GroupDescription')) {
 				$gl = new GroupList(null, false, true);
 				$groupNames = array();
 				$groupDescriptions = array();
@@ -200,6 +210,10 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 				$localized = isset($_POST["AttributeTypeName_$atID"]) ? $this->post("AttributeTypeName_$atID") : tc('AttributeTypeName', $attributeTypeNames[$atID]['source']);
 				$attributeTypeNames[$atID]['translated'] = ($localized == $attributeTypeNames[$atID]['source']) ? '' : $localized;
 			}
+			foreach(array_keys($areaNames) as $arHandle) {
+				$localized = isset($_POST["AreaName_$arHandle"]) ? $this->post("AreaName_$arHandle") : tc('AreaName', $attributeTypeNames[$arHandle]['source']);
+				$areaNames[$arHandle]['translated'] = ($localized == $attributeTypeNames[$arHandle]['source']) ? '' : $localized;
+			}                        
 			foreach(array_keys($permissionKeyNames) as $pkcHandle) {
 				foreach(array_keys($permissionKeyNames[$pkcHandle]) as $pkID) {
 					$localized = isset($_POST["PermissionKeyName_$pkID"]) ? $this->post("PermissionKeyName_$pkID") : tc('PermissionKeyName', $permissionKeyNames[$pkcHandle][$pkID]['source']);
@@ -260,6 +274,9 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 			if($lh->getContextEnabled('AttributeTypeName')) {
 				$translationTables['AttributeTypeName'] = array('name' => t('Attribute type names'), 'rows' => self::buildTranslationRows('AttributeTypeName', $attributeTypeNames));
 			}
+			if($lh->getContextEnabled('AreaName')) {
+				$translationTables['AreaName'] = array('name' => t('Area Names'), 'rows' => self::buildTranslationRows('AreaName', $areaNames));
+			}
 			if($lh->getContextEnabled('PermissionKeyName')) {
 				$translationTables['PermissionKeyName'] = array('name' => t('Permission key names'), 'rows' => self::buildTranslationRows('PermissionKeyName', $permissionKeyNames, $permissionCategories));
 			}
@@ -318,10 +335,10 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 					$lh = Loader::helper('localizer', 'localizer');
 					foreach($this->post() as $name => $translated) {
 						$translated = is_string($translated) ? trim($translated) : '';
-						if(strlen($translated) && preg_match('/^(.+)_([1-9][0-9]*)$/', $name, $match)) {
-							$context = $match[1];
+						if(strlen($translated) && preg_match('/^([a-zA-Z]+)_(.*)$/', $name, $match)) {
+							$context = $match[1];                                                        
 							if($lh->getContextEnabled($context)) {
-								$id = intval($match[2]);
+								$id = $match[2];
 								switch($context) {
 									case 'AttributeSetName':
 										$as = AttributeSet::getByID($id);
@@ -343,6 +360,9 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 											throw new Exception(t("Unable to find the attribute type with id '%s'", $id));
 										}
 										$translationFileHelper->add($at->getAttributeTypeName(), $translated, $context);
+										break;
+									case 'AreaName':
+										$translationFileHelper->add($id, $translated, $context);
 										break;
 									case 'PermissionKeyName':
 										$pk = PermissionKey::getByID($id);
