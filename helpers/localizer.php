@@ -14,7 +14,7 @@ class LocalizerHelper {
 			case 'GroupSetName':
 			case 'SelectAttributeValue':
 			case 'AreaName':
-				return '5.6.2.2';
+				return ''; // Empty string: means it's still in pull-request state (for development: set it to something like '5.6.2');
 			default:
 				return '5.6.2';
 		}
@@ -42,7 +42,7 @@ class LocalizerHelper {
 
 	public function getContextEnabled($context) {
 		$vMin = $this->getMinAppVersionForContext($context);
-		if(version_compare(APP_VERSION, $vMin) < 0) {
+		if((!strlen($vMin)) || (version_compare(APP_VERSION, $vMin) < 0)) {
 			return false;
 		}
 		$value = $this->getPackage()->config("skipContext_$context");
@@ -50,7 +50,7 @@ class LocalizerHelper {
 	}
 	public function setContextEnabled($context, $enabled) {
 		$vMin = $this->getMinAppVersionForContext($context);
-		if(version_compare(APP_VERSION, $vMin) >= 0) {
+		if(strlen($vMin) && (version_compare(APP_VERSION, $vMin) >= 0)) {
 			$key = "skipContext_$context";
 			if($enabled) {
 				$this->getPackage()->clearConfig($key);

@@ -23,7 +23,10 @@ class DashboardSystemBasicsLocalizerOptionsController extends DashboardBaseContr
 		$lh = Loader::helper('localizer', 'localizer');
 		foreach($this->getContexts() as $context => $name) {
 			$vMin = $lh->getMinAppVersionForContext($context);
-			if(version_compare(APP_VERSION, $vMin) < 0) {
+			if(!strlen($vMin)) {
+				$selected = t('Still in development');
+			}
+			elseif(version_compare(APP_VERSION, $vMin) < 0) {
 				$selected = t('Available from concrete5 %s', $vMin);
 			}
 			elseif($this->isPost()) {
