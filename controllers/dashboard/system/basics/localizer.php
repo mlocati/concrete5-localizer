@@ -424,10 +424,12 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 									}
 								}
 								$text = self::fieldName2text($match[2]);
-								switch($context) {
-									case 'AreaName':
-										$translationFileHelper->add($text, $translated, $context);
-										break;
+								if(strlen($text)) {
+									switch($context) {
+										case 'AreaName':
+											$translationFileHelper->add($text, $translated, $context);
+											break;
+									}
 								}
 							}
 						}
@@ -501,11 +503,11 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 		return strcasecmp($a['source'], $b['source']);
 	}
 
-	private static $textFieldNameMap = array(' ' => '_-SPACE-_');
 	private static function text2fieldName($text) {
-		return str_replace(array_keys(self::$textFieldNameMap), array_values(self::$textFieldNameMap), $text);
+		return str_replace('=', '_', base64_encode($text));
 	}
 	private static function fieldName2text($fieldName) {
-		return str_replace(array_values(self::$textFieldNameMap), array_keys(self::$textFieldNameMap), $fieldName);
+		$decoded = @base64_decode(str_replace('_', '=', $fieldName));
+		return is_string($decoded) ? $decoded : '';
 	}
 }
