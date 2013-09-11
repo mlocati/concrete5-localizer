@@ -334,7 +334,16 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 						throw new Exception(t("Invalid locale identifier: '%s'", $locale));
 					}
 					$translationFileHelper = Loader::helper('translation_file', 'localizer');
+					$translationFileHelper->setHeader('Project-Id-Version', 'Localizer');
 					$translationFileHelper->setHeader('Language', $locale);
+					$translationFileHelper->setHeader('Language-Team', $locale);
+					if(User::isLoggedIn()) {
+						$me = new User();
+					}
+					else {
+						$me = null;
+					}
+					$translationFileHelper->setHeader('Last-Translator', $me ? $me->getUserName() : 'unknown');
 					$lh = Loader::helper('localizer', 'localizer');
 					foreach($this->post() as $name => $translated) {
 						$translated = is_string($translated) ? trim($translated) : '';
