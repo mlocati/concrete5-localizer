@@ -1,0 +1,22 @@
+0.9.5
+- Generation of translation files more standard-compliant
+- New icon
+- Improvements in area names management
+
+0.9.4
+- Add button to switch from options to mail Localizer page
+- Add state to signal still unapproved translation contexts
+- Add initial support for translating area names (but still disabled because of pending pull requests)
+- Add support for translating values of select attributes (but still disabled because of pending pull requests)
+- Add option page to choose the translation contexts that Localizer can handle
+
+0.9.3
+- Add support for translating groups and group sets (but still disabled because of pending pull requests)
+
+0.9.2
+- Fixes to respect forbidden functions of PRB
+- Add support for translating job set names
+- Add German translation (thanks Remo)
+
+0.9.1
+- Initial version
