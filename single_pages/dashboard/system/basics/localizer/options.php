@@ -39,7 +39,7 @@ echo $dh->getDashboardPaneHeaderWrapper(t('Localizer options'), false, 'span12',
 </div>
 <div class="ccm-pane-footer">
 	<?php echo $ih->button(t('Localizer'), DIR_REL . '/' . DISPATCHER_FILENAME . '/dashboard/system/basics/localizer/', 'left'); ?>
-	<? echo $ih->button_js(t('Save'), "if(!this.already){this.already = true; $('#localizer-options').submit(); }", 'right', 'primary'); ?>
+	<?php echo $ih->button_js(t('Save'), "if(!this.already){this.already = true; $('#localizer-options').submit(); }", 'right', 'primary'); ?>
 </div>
 <?php
 
