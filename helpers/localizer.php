@@ -9,12 +9,12 @@ class LocalizerHelper {
 
 	public function getMinAppVersionForContext($context) {
 		switch($context) {
-			case 'GroupName':
-			case 'GroupDescription':
-			case 'GroupSetName':
 			case 'SelectAttributeValue':
 				return ''; // Empty string: means it's still in pull-request state (for development: set it to something like '5.6.2');
 			case 'AreaName':
+			case 'GroupName':
+			case 'GroupDescription':
+			case 'GroupSetName':
 				return '5.6.2.2b2';
 			default:
 				return '5.6.2';
