@@ -1,0 +1,20 @@
+{
+    "name": "mlocati/localizer",
+    "type": "concrete5-package",
+    "keywords": ["concrete5"],
+    "authors": [
+        {
+            "name": "Michele Locati",
+            "homepage": "http://www.locati.it/"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "composer/installers": ">=1.0.7"
+    },
+    "minimum-stability": "dev",
+    "support": {
+        "source": "https://github.com/mlocati/concrete5-localizer",
+        "issues": "https://github.com/mlocati/concrete5-localizer/issues"
+    }
+}
