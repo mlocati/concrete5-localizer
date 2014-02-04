@@ -7,14 +7,17 @@ class LocalizerHelper {
 		return $folder . "/$locale.mo";
 	}
 
+	/** Returns the minimum concrete5 version that supports a translation context (or an empty string if it's still in pull-request state)
+	* @param string $context
+	* @return string
+	*/
 	public function getMinAppVersionForContext($context) {
 		switch($context) {
-			case 'SelectAttributeValue':
-				return ''; // Empty string: means it's still in pull-request state (for development: set it to something like '5.6.2');
 			case 'AreaName':
 			case 'GroupName':
 			case 'GroupDescription':
 			case 'GroupSetName':
+			case 'SelectAttributeValue':
 				return '5.6.2.2b2';
 			default:
 				return '5.6.2';
