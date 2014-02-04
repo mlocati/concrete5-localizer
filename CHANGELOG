@@ -1,3 +1,7 @@
+1.0.0
+- Add-on now officially approved!
+- SelectAttributeValue translation context available (in official concrete5 beta version)
+
 0.9.5
 - Generation of translation files more standard-compliant
 - New icon
