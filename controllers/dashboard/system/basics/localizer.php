@@ -58,6 +58,37 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 				$result->Close();
 				uasort($areaNames, array(__CLASS__, 'sortBy_source'));
 			}
+			$blockTypeCustomTemplateNames = $lh->getContextEnabled('BlockTypeCustomTemplateName') ? array() : null;
+			$blockTypeComposerTemplateNames = $lh->getContextEnabled('BlockTypeComposerTemplateName') ? array() : null;
+			if(is_array($blockTypeCustomTemplateNames) || is_array($blockTypeComposerTemplateNames)) {
+				$th = Loader::helper('text');
+				foreach(BlockTypeList::getInstalledList() as $bt) {
+					if(is_array($blockTypeCustomTemplateNames)) {
+						foreach($bt->getBlockTypeCustomTemplates(false) as $handle) {
+							$name = $handle;
+							if (strpos($name, '.') !== false) {
+								$name = substr($name, 0, strrpos($name, '.'));
+							}
+							$blockTypeCustomTemplateNames[self::text2fieldName($name)]['source'] = $th->unhandle($name);
+						}
+					}
+					if(is_array($blockTypeComposerTemplateNames)) {
+						foreach($bt->getBlockTypeComposerTemplates(false) as $handle) {
+							$name = $handle;
+							if (strpos($name, '.') !== false) {
+								$name = substr($name, 0, strrpos($name, '.'));
+							}
+							$blockTypeComposerTemplateNames[self::text2fieldName($name)]['source'] = $th->unhandle($name);
+						}
+					}
+				}
+				if(is_array($blockTypeCustomTemplateNames)) {
+					uasort($blockTypeCustomTemplateNames, array(__CLASS__, 'sortBy_source'));
+				}
+				if(is_array($blockTypeComposerTemplateNames)) {
+					uasort($blockTypeComposerTemplateNames, array(__CLASS__, 'sortBy_source'));
+				}
+			}
 			foreach(AttributeKeyCategory::getList() as $akc) {
 				$akcHandle = $akc->getAttributeKeyCategoryHandle();
 				switch($akcHandle) {
@@ -217,6 +248,18 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 					$areaNames[$arKey]['translated'] = ($localized == $areaNames[$arKey]['source']) ? '' : $localized;
 				}
 			}
+			if($lh->getContextEnabled('BlockTypeCustomTemplateName')) {
+				foreach(array_keys($blockTypeCustomTemplateNames) as $ctKey) {
+					$localized = isset($_POST["BlockTypeCustomTemplateName_$ctKey"]) ? $this->post("BlockTypeCustomTemplateName_$ctKey") : tc('BlockTypeCustomTemplateName', $blockTypeCustomTemplateNames[$ctKey]['source']);
+					$blockTypeCustomTemplateNames[$ctKey]['translated'] = ($localized == $blockTypeCustomTemplateNames[$ctKey]['source']) ? '' : $localized;
+				}
+			}
+			if($lh->getContextEnabled('BlockTypeComposerTemplateName')) {
+				foreach(array_keys($blockTypeComposerTemplateNames) as $ctKey) {
+					$localized = isset($_POST["BlockTypeComposerTemplateName_$ctKey"]) ? $this->post("BlockTypeComposerTemplateName_$ctKey") : tc('BlockTypeComposerTemplateName', $blockTypeComposerTemplateNames[$ctKey]['source']);
+					$blockTypeComposerTemplateNames[$ctKey]['translated'] = ($localized == $blockTypeComposerTemplateNames[$ctKey]['source']) ? '' : $localized;
+				}
+			}
 			foreach(array_keys($permissionKeyNames) as $pkcHandle) {
 				foreach(array_keys($permissionKeyNames[$pkcHandle]) as $pkID) {
 					$localized = isset($_POST["PermissionKeyName_$pkID"]) ? $this->post("PermissionKeyName_$pkID") : tc('PermissionKeyName', $permissionKeyNames[$pkcHandle][$pkID]['source']);
@@ -303,6 +346,12 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 			}
 			if($lh->getContextEnabled('SelectAttributeValue')) {
 				$translationTables['SelectAttributeValue'] = array('name' => t('Values of the select attributes'), 'rows' => self::buildTranslationRows('SelectAttributeValue', $selectAttributeValues, $attributeCategories));
+			}
+			if($lh->getContextEnabled('BlockTypeCustomTemplateName')) {
+				$translationTables['BlockTypeCustomTemplateName'] = array('name' => t('Custom templates of block types'), 'rows' => self::buildTranslationRows('BlockTypeCustomTemplateName', $blockTypeCustomTemplateNames));
+			}
+			if($lh->getContextEnabled('BlockTypeComposerTemplateName')) {
+				$translationTables['BlockTypeComposerTemplateName'] = array('name' => t('Custom templates of block types in composer'), 'rows' => self::buildTranslationRows('BlockTypeComposerTemplateName', $blockTypeComposerTemplateNames));
 			}
 			$this->set('translationTables', $translationTables);
 			$currentTable = $this->post('currentTable');
@@ -436,6 +485,8 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 								if(strlen($text)) {
 									switch($context) {
 										case 'AreaName':
+										case 'BlockTypeCustomTemplateName':
+										case 'BlockTypeComposerTemplateName':
 											$translationFileHelper->add($text, $translated, $context);
 											break;
 									}

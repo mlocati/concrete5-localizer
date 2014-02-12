@@ -19,6 +19,9 @@ class LocalizerHelper {
 			case 'GroupSetName':
 			case 'SelectAttributeValue':
 				return '5.6.2.2b2';
+			case 'BlockTypeCustomTemplateName':
+			case 'BlockTypeComposerTemplateName':
+				return '';
 			default:
 				return '5.6.2';
 		}
