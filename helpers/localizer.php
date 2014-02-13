@@ -19,6 +19,8 @@ class LocalizerHelper {
 			case 'GroupSetName':
 			case 'SelectAttributeValue':
 				return '5.6.2.2b2';
+			case 'TemplateFileName':
+				return '';
 			default:
 				return '5.6.2';
 		}

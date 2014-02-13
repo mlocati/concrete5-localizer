@@ -58,6 +58,21 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 				$result->Close();
 				uasort($areaNames, array(__CLASS__, 'sortBy_source'));
 			}
+			$templateFileNames = null;
+			if($lh->getContextEnabled('TemplateFileName')) {
+				$templateFileNames = array();
+				foreach(BlockTypeList::getInstalledList() as $bt) {
+					foreach($bt->getBlockTypeCustomTemplates() as $tf) {
+						$templateFileNames[self::text2fieldName($tf->getTemplateFileName())]['source'] = $tf->getTemplateFileName();
+						$templateFileNames[self::text2fieldName($tf->getTemplateFileName())]['object'] = $tf;
+					}
+					foreach($bt->getBlockTypeComposerTemplates() as $tf) {
+						$templateFileNames[self::text2fieldName($tf->getTemplateFileName())]['source'] = $tf->getTemplateFileName();
+						$templateFileNames[self::text2fieldName($tf->getTemplateFileName())]['object'] = $tf;
+					}
+				}
+				uasort($templateFileNames, array(__CLASS__, 'sortBy_source'));
+			}
 			foreach(AttributeKeyCategory::getList() as $akc) {
 				$akcHandle = $akc->getAttributeKeyCategoryHandle();
 				switch($akcHandle) {
@@ -217,6 +232,13 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 					$areaNames[$arKey]['translated'] = ($localized == $areaNames[$arKey]['source']) ? '' : $localized;
 				}
 			}
+			if($lh->getContextEnabled('TemplateFileName')) {
+				foreach(array_keys($templateFileNames) as $tfKey) {
+					$localized = isset($_POST["TemplateFileName_$tfKey"]) ? $this->post("TemplateFileName_$tfKey") : $templateFileNames[$tfKey]['object']->getTemplateFileDisplayName('text');
+					$templateFileNames[$tfKey]['translated'] = ($localized == $templateFileNames[$tfKey]['source']) ? '' : $localized;
+					unset($templateFileNames[$tfKey]['object']);
+				}
+			}
 			foreach(array_keys($permissionKeyNames) as $pkcHandle) {
 				foreach(array_keys($permissionKeyNames[$pkcHandle]) as $pkID) {
 					$localized = isset($_POST["PermissionKeyName_$pkID"]) ? $this->post("PermissionKeyName_$pkID") : tc('PermissionKeyName', $permissionKeyNames[$pkcHandle][$pkID]['source']);
@@ -303,6 +325,9 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 			}
 			if($lh->getContextEnabled('SelectAttributeValue')) {
 				$translationTables['SelectAttributeValue'] = array('name' => t('Values of the select attributes'), 'rows' => self::buildTranslationRows('SelectAttributeValue', $selectAttributeValues, $attributeCategories));
+			}
+			if($lh->getContextEnabled('TemplateFileName')) {
+				$translationTables['TemplateFileName'] = array('name' => t('Template file names'), 'rows' => self::buildTranslationRows('TemplateFileName', $templateFileNames));
 			}
 			$this->set('translationTables', $translationTables);
 			$currentTable = $this->post('currentTable');
@@ -436,6 +461,7 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 								if(strlen($text)) {
 									switch($context) {
 										case 'AreaName':
+										case 'TemplateFileName':
 											$translationFileHelper->add($text, $translated, $context);
 											break;
 									}
