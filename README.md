@@ -19,13 +19,7 @@ Or install using composer (http://getcomposer.org )
 {
     "require": {
         "mlocati/localizer": "@dev"
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/mlocati/concrete5-localizer"
-        }
-    ]
+    }
 }
 ````
 
