@@ -471,6 +471,8 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController {
 							Localization::changeLocale('en_US');
 							Localization::changeLocale($locale);
 						}
+						
+						Cache::flush();
 					}
 					$this->redirect('/dashboard/system/basics/localizer/updated/?locale=' . rawurlencode($locale) . '&table=' . rawurlencode($this->post('currentTable')));
 				}
