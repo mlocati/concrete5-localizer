@@ -48,4 +48,21 @@ class LocalizerHelper
             $this->getPackage()->saveConfig($key, 'yes');
         }
     }
+    public function getDynamicItemParsers($onlyActive = true)
+    {
+        Loader::helper('localizer_composer', 'localizer')->loadAutoloaders();
+        $dynamicParser = new \C5TL\Parser\Dynamic();
+        $parsers = $dynamicParser->getSubParsers();
+        if($onlyActive) {
+            $filtered = array();
+            foreach($parsers as $parser) {
+                if($this->getParserEnabled($parser->getDynamicItemsParserHandler())) {
+                    $filtered[] = $parser;
+                }
+            }
+            $parsers = $filtered;
+        }
+        return $parsers;
+    }
+    
 }

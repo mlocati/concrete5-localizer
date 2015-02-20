@@ -23,11 +23,34 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController
 
         return $locales;
     }
+    
+    private function getTranslationGroups()
+    {
+        Loader::helper('localizer_composer', 'localizer')->loadAutoloaders();
+        $lh = Loader::helper('localizer', 'localizer');
+        /* @var $lh LocalizerHelper */
+        $translationsGroups = array();
+        foreach($lh->getDynamicItemParsers() as $parser) {
+            /* @var $parser C5TL\Parser\DynamicItem\DynamicItem */
+            $translations = new \Gettext\Translations();
+            $parser->parse($translations, APP_VERSION);
+            $translationsHashed = array();
+            foreach($translations as $translation) {
+                /* @var $translation = \Gettext\Translation */
+                $translationsHashed[md5($translation->getID())] = $translation;
+            }
+            uasort($translationsHashed, function($a, $b) {
+                return strcasecmp($a->getOriginal(), $b->getOriginal());
+            });
+            $translationsGroups[$parser->getParsedItemNames()] = $translationsHashed;
+        }
+        return $translationsGroups;
+    }
 
     public function view()
     {
         $lh = Loader::helper('localizer', 'localizer');
-        $db = Loader::db();
+        /* @var $lh LocalizerHelper */
         if (!$lh->getConfigured()) {
             $this->redirect('/dashboard/system/basics/localizer/options/');
         }
@@ -45,280 +68,41 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController
                     }
                 }
             }
-            $attributeCategories = array();
-            $attributeSetNames = array();
-            $attributeKeyNames = array();
-            $selectAttributeValues = null;
-            $areaNames = null;
-            if ($lh->getContextEnabled('SelectAttributeValue')) {
-                $selectAttributeValues = array();
-            }
-            if ($lh->getContextEnabled('AreaName')) {
-                $areaNames = array();
-                $result = $db->Execute('SELECT DISTINCT arHandle FROM Areas ORDER BY arHandle');
-                while ($row = $result->FetchRow()) {
-                    $areaNames[self::text2fieldName($row['arHandle'])]['source'] = $row['arHandle'];
-                }
-                $result->Close();
-                uasort($areaNames, array(__CLASS__, 'sortBy_source'));
-            }
-            foreach (AttributeKeyCategory::getList() as $akc) {
-                $akcHandle = $akc->getAttributeKeyCategoryHandle();
-                switch ($akcHandle) {
-                    case 'collection':
-                        $akcName = t('Page attributes');
-                        break;
-                    case 'user':
-                        $akcName = t('User attributes');
-                        break;
-                    case 'file':
-                        $akcName = t('File attributes');
-                        break;
-                    default:
-                        $akcName = Object::uncamelcase($akcHandle);
-                        break;
-                }
-                $attributeCategories[$akcHandle] = $akcName;
-                foreach ($akc->getAttributeSets() as $as) {
-                    $attributeSetNames[$akcHandle][$as->getAttributeSetID()]['source'] = $as->getAttributeSetName();
-                }
-                if (isset($attributeSetNames[$akcHandle])) {
-                    uasort($attributeSetNames[$akcHandle], array(__CLASS__, 'sortBy_source'));
-                }
-                foreach (AttributeKey::getList($akcHandle) as $ak) {
-                    $attributeKeyNames[$akcHandle][$ak->getAttributeKeyID()]['source'] = $ak->getAttributeKeyName();
-                    if (is_array($selectAttributeValues)) {
-                        if ($ak->getAttributeType()->getAttributeTypeHandle() == 'select') {
-                            foreach ($ak->getController()->getOptions() as $option) {
-                                $selectAttributeValues[$akcHandle][$option->getSelectAttributeOptionID()]['source'] = $option->getSelectAttributeOptionValue(false);
-                            }
-                        }
-                    }
-                }
-                if (isset($attributeKeyNames[$akcHandle])) {
-                    uasort($attributeKeyNames[$akcHandle], array(__CLASS__, 'sortBy_source'));
-                }
-            }
-            asort($attributeCategories);
-            $attributeTypeNames = array();
-            foreach (AttributeType::getList() as $at) {
-                $attributeTypeNames[$at->getAttributeTypeID()]['source'] = $at->getAttributeTypeName();
-            }
-            uasort($attributeTypeNames, array(__CLASS__, 'sortBy_source'));
-            $permissionCategories = array();
-            $permissionKeyNames = array();
-            $permissionKeyDescriptions = array();
-            foreach (PermissionKeyCategory::getList() as $pkc) {
-                $pkcHandle = $pkc->getPermissionKeyCategoryHandle();
-                switch ($pkcHandle) {
-                    case 'page':
-                        $pkcName = t('Page');
-                        break;
-                    case 'single_page':
-                        $pkcName = t('Single page');
-                        break;
-                    case 'stack':
-                        $pkcName = t('Stack');
-                        break;
-                    case 'composer_page':
-                        $pkcName = t('Composer page');
-                        break;
-                    case 'user':
-                        $pkcName = t('User');
-                        break;
-                    case 'file_set':
-                        $pkcName = t('File set');
-                        break;
-                    case 'file':
-                        $pkcName = t('File');
-                        break;
-                    case 'area':
-                        $pkcName = t('Area');
-                        break;
-                    case 'block_type':
-                        $pkcName = t('Block type');
-                        break;
-                    case 'block':
-                        $pkcName = t('Block');
-                        break;
-                    case 'admin':
-                        $pkcName = t('Administration');
-                        break;
-                    case 'sitemap':
-                        $pkcName = t('Site map');
-                        break;
-                    case 'marketplace_newsflow':
-                        $pkcName = t('MarketPlace newsflow');
-                        break;
-                    case 'basic_workflow':
-                        $pkcName = t('Basic workflow');
-                        break;
-                    default:
-                        $pkcName = Object::uncamelcase($akcHandle);
-                        break;
-                }
-                $permissionCategories[$pkcHandle] = $pkcName;
-                foreach (PermissionKey::getList($pkcHandle) as $pk) {
-                    $permissionKeyNames[$pkcHandle][$pk->getPermissionKeyID()]['source'] = $pk->getPermissionKeyName();
-                    $permissionKeyDescriptions[$pkcHandle][$pk->getPermissionKeyID()]['source'] = $pk->getPermissionKeyDescription();
-                }
-                if (isset($permissionKeyNames[$pkcHandle])) {
-                    uasort($permissionKeyNames[$pkcHandle], array(__CLASS__, 'sortBy_source'));
-                }
-                if (isset($permissionKeyDescriptions[$pkcHandle])) {
-                    uasort($permissionKeyDescriptions[$pkcHandle], array(__CLASS__, 'sortBy_source'));
-                }
-            }
-            asort($permissionCategories);
-            $permissionAccessEntityTypeNames = array();
-            foreach (PermissionAccessEntityType::getList() as $accessEntityType) {
-                $permissionAccessEntityTypeNames[$accessEntityType->getAccessEntityTypeID()]['source'] = $accessEntityType->getAccessEntityTypeName();
-            }
-            uasort($permissionAccessEntityTypeNames, array(__CLASS__, 'sortBy_source'));
-            $jobSetNames = array();
-            foreach (JobSet::getList() as $jobSet) {
-                $jobSetNames[$jobSet->getJobSetID()]['source'] = $jobSet->getJobSetName();
-            }
-            uasort($jobSetNames, array(__CLASS__, 'sortBy_source'));
-            if ($lh->getContextEnabled('GroupName') || $lh->getContextEnabled('GroupDescription')) {
-                $gl = new GroupList(null, false, true);
-                $groupNames = array();
-                $groupDescriptions = array();
-                foreach ($gl->getGroupList() as $g) {
-                    $groupNames[$g->getGroupID()]['source'] = $g->getGroupName();
-                    $groupDescriptions[$g->getGroupID()]['source'] = $g->getGroupDescription();
-                }
-            }
-            if ($lh->getContextEnabled('GroupSetName')) {
-                $groupSetNames = array();
-                foreach (GroupSet::getList() as $gs) {
-                    $groupSetNames[$gs->getGroupSetID()]['source'] = $gs->getGroupSetName();
-                }
-            }
+            $this->set('locale', $locale);
             $curLocale = Localization::activeLocale();
             if ($curLocale != $locale) {
                 Localization::changeLocale($locale);
             }
-            foreach (array_keys($attributeSetNames) as $akcHandle) {
-                foreach (array_keys($attributeSetNames[$akcHandle]) as $asID) {
-                    $localized = isset($_POST["AttributeSetName_$asID"]) ? $this->post("AttributeSetName_$asID") : tc('AttributeSetName', $attributeSetNames[$akcHandle][$asID]['source']);
-                    $attributeSetNames[$akcHandle][$asID]['translated'] = ($localized == $attributeSetNames[$akcHandle][$asID]['source']) ? '' : $localized;
-                }
-            }
-            foreach (array_keys($attributeKeyNames) as $akcHandle) {
-                foreach (array_keys($attributeKeyNames[$akcHandle]) as $akID) {
-                    $localized = isset($_POST["AttributeKeyName_$akID"]) ? $this->post("AttributeKeyName_$akID") : tc('AttributeKeyName', $attributeKeyNames[$akcHandle][$akID]['source']);
-                    $attributeKeyNames[$akcHandle][$akID]['translated'] = ($localized == $attributeKeyNames[$akcHandle][$akID]['source']) ? '' : $localized;
-                }
-            }
-            foreach (array_keys($attributeTypeNames) as $atID) {
-                $localized = isset($_POST["AttributeTypeName_$atID"]) ? $this->post("AttributeTypeName_$atID") : tc('AttributeTypeName', $attributeTypeNames[$atID]['source']);
-                $attributeTypeNames[$atID]['translated'] = ($localized == $attributeTypeNames[$atID]['source']) ? '' : $localized;
-            }
-            if ($lh->getContextEnabled('AreaName')) {
-                foreach (array_keys($areaNames) as $arKey) {
-                    $localized = isset($_POST["AreaName_$arKey"]) ? $this->post("AreaName_$arKey") : tc('AreaName', $areaNames[$arKey]['source']);
-                    $areaNames[$arKey]['translated'] = ($localized == $areaNames[$arKey]['source']) ? '' : $localized;
-                }
-            }
-            foreach (array_keys($permissionKeyNames) as $pkcHandle) {
-                foreach (array_keys($permissionKeyNames[$pkcHandle]) as $pkID) {
-                    $localized = isset($_POST["PermissionKeyName_$pkID"]) ? $this->post("PermissionKeyName_$pkID") : tc('PermissionKeyName', $permissionKeyNames[$pkcHandle][$pkID]['source']);
-                    $permissionKeyNames[$pkcHandle][$pkID]['translated'] = ($localized == $permissionKeyNames[$pkcHandle][$pkID]['source']) ? '' : $localized;
-                }
-            }
-            foreach (array_keys($permissionKeyDescriptions) as $pkcHandle) {
-                foreach (array_keys($permissionKeyDescriptions[$pkcHandle]) as $pkID) {
-                    $localized = isset($_POST["PermissionKeyDescription_$pkID"]) ? $this->post("PermissionKeyDescription_$pkID") : tc('PermissionKeyDescription', $permissionKeyDescriptions[$pkcHandle][$pkID]['source']);
-                    $permissionKeyDescriptions[$pkcHandle][$pkID]['translated'] = ($localized == $permissionKeyDescriptions[$pkcHandle][$pkID]['source']) ? '' : $localized;
-                }
-            }
-            foreach (array_keys($permissionAccessEntityTypeNames) as $accessEntityTypeID) {
-                $localized = isset($_POST["PermissionAccessEntityTypeName_$accessEntityTypeID"]) ? $this->post("PermissionAccessEntityTypeName_$accessEntityTypeID") : tc('PermissionAccessEntityTypeName', $permissionAccessEntityTypeNames[$accessEntityTypeID]['source']);
-                $permissionAccessEntityTypeNames[$accessEntityTypeID]['translated'] = ($localized == $permissionAccessEntityTypeNames[$accessEntityTypeID]['source']) ? '' : $localized;
-            }
-            foreach (array_keys($jobSetNames) as $jobSetID) {
-                $localized = isset($_POST["JobSetName_$jobSetID"]) ? $this->post("JobSetName__$jobSetID") : tc('JobSetName', $jobSetNames[$jobSetID]['source']);
-                $jobSetNames[$jobSetID]['translated'] = ($localized == $jobSetNames[$jobSetID]['source']) ? '' : $localized;
-            }
-            if ($lh->getContextEnabled('GroupName')) {
-                foreach (array_keys($groupNames) as $gID) {
-                    $localized = isset($_POST["GroupName_$gID"]) ? $this->post("GroupName_$gID") : tc('GroupName', $groupNames[$gID]['source']);
-                    $groupNames[$gID]['translated'] = ($localized == $groupNames[$gID]['source']) ? '' : $localized;
-                }
-            }
-            if ($lh->getContextEnabled('GroupDescription')) {
-                foreach (array_keys($groupDescriptions) as $gID) {
-                    $localized = isset($_POST["GroupDescription_$gID"]) ? $this->post("GroupDescription_$gID") : tc('GroupDescription', $groupDescriptions[$gID]['source']);
-                    $groupDescriptions[$gID]['translated'] = ($localized == $groupDescriptions[$gID]['source']) ? '' : $localized;
-                }
-            }
-            if ($lh->getContextEnabled('GroupSetName')) {
-                foreach (array_keys($groupSetNames) as $gsID) {
-                    $localized = isset($_POST["GroupSetName_$gsID"]) ? $this->post("GroupSetName_$gsID") : tc('GroupSetName', $groupSetNames[$gsID]['source']);
-                    $groupSetNames[$gsID]['translated'] = ($localized == $groupSetNames[$gsID]['source']) ? '' : $localized;
-                }
-            }
-            if (is_array($selectAttributeValues)) {
-                foreach (array_keys($selectAttributeValues) as $akcHandle) {
-                    foreach (array_keys($selectAttributeValues[$akcHandle]) as $savID) {
-                        $localized = isset($_POST["SelectAttributeValue_$savID"]) ? $this->post("SelectAttributeValue_$savID") : tc('SelectAttributeValue', $selectAttributeValues[$akcHandle][$savID]['source']);
-                        $selectAttributeValues[$akcHandle][$savID]['translated'] = ($localized == $selectAttributeValues[$akcHandle][$savID]['source']) ? '' : $localized;
+            $translationsGroups = $this->getTranslationGroups();
+            foreach ($translationsGroups as $translationsGroup) {
+                foreach($translationsGroup as $translation) {
+                    /* @var $translation = \Gettext\Translation */
+                    $sourceText = $translation->getOriginal();
+                    if($translation->hasContext()) {
+                        $translatedText = tc($translation->getContext(), $sourceText);
+                    }
+                    else {
+                        $translatedText = t($sourceText);
+                    }
+                    if (is_string($translatedText) && ($translatedText !== '') && ($translatedText !== $sourceText)) {
+                        $translation->setTranslation($translatedText);
                     }
                 }
             }
             if ($curLocale != $locale) {
                 Localization::changeLocale($curLocale);
             }
-            $this->set('locale', $locale);
-            $translationTables = array();
-            if ($lh->getContextEnabled('AttributeSetName')) {
-                $translationTables['AttributeSetName'] = array('name' => t('Attribute sets names'), 'rows' => self::buildTranslationRows('AttributeSetName', $attributeSetNames, $attributeCategories));
-            }
-            if ($lh->getContextEnabled('AttributeKeyName')) {
-                $translationTables['AttributeKeyName'] = array('name' => t('Attribute key names'), 'rows' => self::buildTranslationRows('AttributeKeyName', $attributeKeyNames, $attributeCategories));
-            }
-            if ($lh->getContextEnabled('AttributeTypeName')) {
-                $translationTables['AttributeTypeName'] = array('name' => t('Attribute type names'), 'rows' => self::buildTranslationRows('AttributeTypeName', $attributeTypeNames));
-            }
-            if ($lh->getContextEnabled('AreaName')) {
-                $translationTables['AreaName'] = array('name' => t('Area Names'), 'rows' => self::buildTranslationRows('AreaName', $areaNames));
-            }
-            if ($lh->getContextEnabled('PermissionKeyName')) {
-                $translationTables['PermissionKeyName'] = array('name' => t('Permission key names'), 'rows' => self::buildTranslationRows('PermissionKeyName', $permissionKeyNames, $permissionCategories));
-            }
-            if ($lh->getContextEnabled('PermissionKeyDescription')) {
-                $translationTables['PermissionKeyDescription'] = array('name' => t('Permission key descriptions'), 'rows' => self::buildTranslationRows('PermissionKeyDescription', $permissionKeyDescriptions, $permissionCategories));
-            }
-            if ($lh->getContextEnabled('PermissionAccessEntityTypeName')) {
-                $translationTables['PermissionAccessEntityTypeName'] = array('name' => t('Access entity type names'), 'rows' => self::buildTranslationRows('PermissionAccessEntityTypeName', $permissionAccessEntityTypeNames));
-            }
-            if ($lh->getContextEnabled('JobSetName')) {
-                $translationTables['JobSetName'] = array('name' => t('Job set names'), 'rows' => self::buildTranslationRows('JobSetName', $jobSetNames));
-            }
-            if ($lh->getContextEnabled('GroupName')) {
-                $translationTables['GroupName'] = array('name' => t('User group names'), 'rows' => self::buildTranslationRows('GroupName', $groupNames));
-            }
-            if ($lh->getContextEnabled('GroupDescription')) {
-                $translationTables['GroupDescription'] = array('name' => t('User group descriptions'), 'rows' => self::buildTranslationRows('GroupDescription', $groupDescriptions));
-            }
-            if ($lh->getContextEnabled('GroupSetName')) {
-                $translationTables['GroupSetName'] = array('name' => t('User group set names'), 'rows' => self::buildTranslationRows('GroupSetName', $groupSetNames));
-            }
-            if ($lh->getContextEnabled('SelectAttributeValue')) {
-                $translationTables['SelectAttributeValue'] = array('name' => t('Values of the select attributes'), 'rows' => self::buildTranslationRows('SelectAttributeValue', $selectAttributeValues, $attributeCategories));
-            }
-            $this->set('translationTables', $translationTables);
-            $currentTable = $this->post('currentTable');
-            if (!(is_string($currentTable) && array_key_exists($currentTable, $translationTables))) {
-                $currentTable = $this->get('table');
-                if (!(is_string($currentTable) && array_key_exists($currentTable, $translationTables))) {
-                    reset($translationTables);
-                    $currentTable = key($translationTables);
-                    reset($translationTables);
+            $this->set('translationsGroups', $translationsGroups);
+            $currentGroup = $this->post('currentGroup');
+            if (!(is_string($currentGroup) && array_key_exists($currentGroup, $translationsGroups))) {
+                $currentGroup = $this->get('table');
+                if (!(is_string($currentGroup) && array_key_exists($currentGroup, $translationsGroups))) {
+                    reset($translationsGroups);
+                    $currentGroup = key($translationsGroups);
+                    reset($translationsGroups);
                 }
             }
-            $this->set('currentTable', $currentTable);
+            $this->set('currentGroup', $currentGroup);
         }
         $this->set('locales', $locales);
     }

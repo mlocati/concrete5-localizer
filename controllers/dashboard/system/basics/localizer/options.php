@@ -3,18 +3,12 @@
 class DashboardSystemBasicsLocalizerOptionsController extends DashboardBaseController
 {
 
-    private function getDynamicItemParsers()
-    {
-        Loader::helper('localizer_composer', 'localizer')->loadAutoloaders();
-        $dynamicParser = new \C5TL\Parser\Dynamic();
-        return $dynamicParser->getSubParsers();
-    }
     public function view()
     {
         $parsers = array();
         $lh = Loader::helper('localizer', 'localizer');
         /* @var $lh LocalizerHelper */
-        foreach ($this->getDynamicItemParsers() as $parserHandle => $parser) {
+        foreach ($lh->getDynamicItemParsers(false) as $parserHandle => $parser) {
             if ($this->isPost()) {
                 $posted = $this->post("enable_$parserHandle");
                 $selected = empty($posted) ? false : true;
@@ -44,9 +38,11 @@ class DashboardSystemBasicsLocalizerOptionsController extends DashboardBaseContr
         if ($this->isPost()) {
             if ($this->token->validate('update')) {
                 try {
+                    $lh = Loader::helper('localizer', 'localizer');
+                    /* @var $lh LocalizerHelper */
                     $map = array();
                     $someEnabled = false;
-                    foreach (array_keys($this->getDynamicItemParsers()) as $parserHandle) {
+                    foreach (array_keys($lh->getDynamicItemParsers(false)) as $parserHandle) {
                         $posted = $this->post("enable_$parserHandle");
                         $enabled = empty($posted) ? false : true;
                         $map[$parserHandle] = $enabled;
@@ -57,8 +53,6 @@ class DashboardSystemBasicsLocalizerOptionsController extends DashboardBaseContr
                     if (!$someEnabled) {
                         $this->error->add(t('Please enable at least one item class to be translated.'));
                     } else {
-                        $lh = Loader::helper('localizer', 'localizer');
-                        /* @var $lh LocalizerHelper */
                         foreach ($map as $parserHandle => $enabled) {
                             $lh->setParserEnabled($parserHandle, $enabled);
                         }

@@ -10,17 +10,17 @@ if (empty($locales)) {
 else {
     $ih = Loader::helper('concrete/interface');
     $jh = Loader::helper('json');
-    $lh = Loader::helper('localizer', 'localizer');
+    /* @var $jh JsonHelper */
     ?>
     <script type="text/javascript">
-        function updateCurrentTable() {
+        function updateCurrentGroup() {
             $(".tsi-table").hide();
             var tsi = $("#tsi-which").val();
             $("#tsi-table-" + tsi).show();
-            $('#currentTable').val(tsi);
+            $('#currentGroup').val(tsi);
         }
         $(document).ready(function() {
-            updateCurrentTable();
+            updateCurrentGroup();
         });
     </script>
     <div class="ccm-pane-options">
@@ -28,10 +28,12 @@ else {
             <div class="span5">
                 <label>
                     <?php echo t('Items'); ?>
-                    <select id="tsi-which" name="currentTable" onchange="updateCurrentTable()">
+                    <select id="tsi-which" name="currentGroup" onchange="updateCurrentGroup()">
                         <?php
-                        foreach ($translationTables as $ttCode => $tt) {
-                            ?><option value="<?php echo h($ttCode); ?>"<?php echo ($ttCode == $currentTable) ? ' selected="selected"' : ''; ?>><?php echo h($tt['name']); ?></option><?php
+                        $index = 0;
+                        foreach (array_keys($translationsGroups) as $tg) {
+                            ?><option value="<?php echo $index; ?>"<?php echo ($tg == $currentGroup) ? ' selected="selected"' : ''; ?>><?php echo h($tg); ?></option><?php
+                            $index++;
                         }
                         ?>
                     </select>
@@ -51,16 +53,50 @@ else {
     </div>
     <div class="ccm-pane-body">
         <form method="post" id="user-translate-form" action="<?php echo $this->action('update') ?>" class="form-horizontal">
-            <input type="hidden" name="currentTable" id="currentTable" value="<?php echo h($currentTable); ?>">
+            <input type="hidden" name="currentGroup" id="currentGroup" value="<?php echo h($currentGroup); ?>">
             <input type="hidden" name="locale" value="<?php echo h($locale); ?>">
             <?php
             echo $this->controller->token->output('update_translations');
-            foreach ($translationTables as $ttCode => $tt) {
-                ?><table class="table table-striped table-condensed tsi-table" style="display:none" id="tsi-table-<?php echo h($ttCode); ?>">
+            $already = array();
+            $duplicatedHashes = array();
+            $index = 0;
+            foreach ($translationsGroups as $tg => $translations) {
+                ?><table class="table table-striped table-condensed tsi-table" style="display:none" id="tsi-table-<?php echo $index; ?>">
                     <tbody>
-                        <?php echo $tt['rows']; ?>
+                        <?php
+                        foreach ($translations as $hash => $translation) {
+                            /* @var $translation \Gettext\Translation */
+                            if(isset($already[$hash])) {
+                                $duplicated = true;
+                                if($already[$hash]) {
+                                    $duplicatedHashes[] = $hash;
+                                    $already[$hash] = false;
+                                }
+                            } else {
+                                $duplicated = false;
+                                $already[$hash] = true;
+                            }
+                            ?><tr>
+                                <td style="width:33%"><?php echo h($translation->getOriginal()); ?></td>
+                                <td><input type="text" style="width:100%" placeholder="<?php echo h(t('Same as English (US)')); ?>" id="<?php echo h($hash); ?>"<?php
+                                    if(!$duplicated) {
+                                        ?> name="<?php echo h($hash); ?>"<?php
+                                    }
+                                    if($translation->hasTranslation()) {
+                                        ?> value="<?php echo h($translation->getTranslation()); ?>"<?php
+                                    }
+                                ?> /></td>
+                            </tr><?php
+                        }
+                        ?>
                     </tbody>
                 </table><?php
+                $index++;
+            }
+            if (!empty($duplicatedHashes)) {
+                ?><script>
+                alert(<?php echo $jh->encode($duplicatedHashes) ?>);
+                </script><?php
             }
             ?>
         </form>
