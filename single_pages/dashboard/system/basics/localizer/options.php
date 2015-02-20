@@ -12,17 +12,17 @@ echo $dh->getDashboardPaneHeaderWrapper(t('Localizer options'), false, 'span12',
             <legend><?php echo t('Which items to you want to be translated?')?></legend>
             <table class="table table-striped">
                 <tbody><?php
-                    foreach ($translationTables as $translationTable) {
+                    foreach ($parsers as $parser) {
                         ?><tr>
-                            <td><?php echo $translationTable['name']; ?></td>
+                            <td><?php echo $parser['name']; ?></td>
                             <td><?php
-                                if(!is_bool($translationTable['selected'])) {
-                                    ?><span style="color: #777"><?php echo h(t($translationTable['selected'])); ?></span><?php
+                                if(!is_bool($parser['selected'])) {
+                                    ?><span style="color: #777"><?php echo h(t($parser['selected'])); ?></span><?php
                                 }
                                 else {
                                     ?>
-                                    <label class="radio inline"><input type="radio" name="enable_<?php echo $translationTable['context']; ?>" value="1" <?php echo $translationTable['selected'] ? ' checked' : ''; ?>> <?php echo t('enabled')?></label>
-                                    <label class="radio inline"><input type="radio" name="enable_<?php echo $translationTable['context']; ?>" value="0" <?php echo $translationTable['selected'] ? '' : ' checked'; ?>> <?php echo t('disabled')?></label>
+                                    <label class="radio inline"><input type="radio" name="enable_<?php echo $parser['handle']; ?>" value="1" <?php echo $parser['selected'] ? ' checked' : ''; ?>> <?php echo t('enabled')?></label>
+                                    <label class="radio inline"><input type="radio" name="enable_<?php echo $parser['handle']; ?>" value="0" <?php echo $parser['selected'] ? '' : ' checked'; ?>> <?php echo t('disabled')?></label>
                                     <?php
                                 }
                             ?></td>

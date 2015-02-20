@@ -25,7 +25,7 @@ class LocalizerPackage extends Package {
 		$this->installOrUpgrade($this, $currentVersion);
 	}
 
-	private function installOrUpgrade($pkg, $upgradeFromVersion = '') {
+	private function installOrUpgrade(Package $pkg, $upgradeFromVersion = '') {
 		$sp = Page::getByPath('/dashboard/system/basics/localizer');
 		if((!is_object($sp)) || $sp->isError()) {
 			$sp = SinglePage::add('/dashboard/system/basics/localizer', $pkg);
@@ -43,6 +43,36 @@ class LocalizerPackage extends Package {
 			if(is_object($ak)) {
 				$sp->setAttribute($ak, t('localizer options, options localizer'));
 			}
+		}
+		if($upgradeFromVersion !== '') {
+		    foreach(array(
+    		    'AreaName' => 'aera',
+    		    'AttributeKeyName' => 'attribute_key',
+    		    'AttributeSetName' => 'attribute_set',
+    		    'AttributeTypeName' => 'attribute_type',
+    		    'GroupDescription' => false,
+    		    'GroupName' => 'group',
+    		    'GroupSetName' => 'group_set',
+    		    'JobSetName' => 'job_set',
+    		    'PermissionAccessEntityTypeName' => 'permission_access_entity_type',
+    		    'PermissionKeyDescription' => false,
+    		    'PermissionKeyName' => 'permission_key',
+    		    'SelectAttributeValue' => 'select_attribute_value',
+			 ) as $oldContext => $parserHandler)
+		    {
+		        $enabled = true;
+		        $oldConfigKey = "skipContext_$oldContext";
+		        if($pkg->config() === 'yes') {
+		            $enabled = false;
+		            $pkg->clearConfig($oldConfigKey);
+		        }
+		        if($parserHandler !== false) {
+    		        if(!$enabled) {
+	   	            $pkg->saveConfig("skipDynamicItemsParser_$parserHandler");
+    		        }
+		        }
+		    }
+		    
 		}
 	}
 

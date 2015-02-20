@@ -10,24 +10,6 @@ class LocalizerHelper
         return $folder."/$locale.mo";
     }
 
-    /** Returns the minimum concrete5 version that supports a translation context (or an empty string if it's still in pull-request state)
-     * @param string $context
-     * @return string
-     */
-    public function getMinAppVersionForContext($context)
-    {
-        switch ($context) {
-            case 'AreaName':
-            case 'GroupName':
-            case 'GroupDescription':
-            case 'GroupSetName':
-            case 'SelectAttributeValue':
-                return '5.6.2.2b2';
-            default:
-                return '5.6.2';
-        }
-    }
-
     private function getPackage()
     {
         static $pkg;
@@ -51,26 +33,19 @@ class LocalizerHelper
         }
     }
 
-    public function getContextEnabled($context)
+    public function getParserEnabled($parserHandle)
     {
-        $vMin = $this->getMinAppVersionForContext($context);
-        if ((!strlen($vMin)) || (version_compare(APP_VERSION, $vMin) < 0)) {
-            return false;
-        }
-        $value = $this->getPackage()->config("skipContext_$context");
+        $value = $this->getPackage()->config("skipDynamicItemsParser_$parserHandle");
 
         return ($value === 'yes') ? false : true;
     }
-    public function setContextEnabled($context, $enabled)
+    public function setParserEnabled($parserHandle, $enabled)
     {
-        $vMin = $this->getMinAppVersionForContext($context);
-        if (strlen($vMin) && (version_compare(APP_VERSION, $vMin) >= 0)) {
-            $key = "skipContext_$context";
-            if ($enabled) {
-                $this->getPackage()->clearConfig($key);
-            } else {
-                $this->getPackage()->saveConfig($key, 'yes');
-            }
+        $key = "skipDynamicItemsParser_$parserHandle";
+        if ($enabled) {
+            $this->getPackage()->clearConfig($key);
+        } else {
+            $this->getPackage()->saveConfig($key, 'yes');
         }
     }
 }
