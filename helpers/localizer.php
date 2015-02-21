@@ -53,15 +53,16 @@ class LocalizerHelper
         $this->loadAutoloaders();
         $dynamicParser = new \C5TL\Parser\Dynamic();
         $parsers = $dynamicParser->getSubParsers();
-        if($onlyActive) {
+        if ($onlyActive) {
             $filtered = array();
-            foreach($parsers as $parser) {
-                if($this->getParserEnabled($parser->getDynamicItemsParserHandler())) {
+            foreach ($parsers as $parser) {
+                if ($this->getParserEnabled($parser->getDynamicItemsParserHandler())) {
                     $filtered[] = $parser;
                 }
             }
             $parsers = $filtered;
         }
+
         return $parsers;
     }
 
@@ -77,5 +78,4 @@ class LocalizerHelper
             Loader::library('3rdparty/mlocati/concrete5-translation-library/src/autoloader', 'localizer');
         }
     }
-    
 }

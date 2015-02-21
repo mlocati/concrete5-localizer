@@ -21,7 +21,7 @@ class DashboardSystemBasicsLocalizerOptionsController extends DashboardBaseContr
                 'selected' => $selected,
             );
         }
-        uasort($parsers, function($a, $b) {
+        uasort($parsers, function ($a, $b) {
             return strcasecmp($a['handle'], $b['handle']);
         });
         $this->set('parsers', $parsers);

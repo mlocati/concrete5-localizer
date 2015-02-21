@@ -23,7 +23,7 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController
 
         return $locales;
     }
-    
+
     private function getTranslations($grouped)
     {
         $lh = Loader::helper('localizer', 'localizer');
@@ -31,27 +31,28 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController
         $lh->loadAutoloaders();
         $parsers = $lh->getDynamicItemParsers();
         $result = array();
-        if($grouped) {
-            foreach($lh->getDynamicItemParsers() as $parser) {
+        if ($grouped) {
+            foreach ($lh->getDynamicItemParsers() as $parser) {
                 /* @var $parser C5TL\Parser\DynamicItem\DynamicItem */
                 $translations = new \Gettext\Translations();
                 $parser->parse($translations, APP_VERSION);
                 $translationsHashed = array();
-                foreach($translations as $translation) {
+                foreach ($translations as $translation) {
                     /* @var $translation \Gettext\Translation */
                     $translationsHashed[md5($translation->getId())] = $translation;
                 }
-                uasort($translationsHashed, function($a, $b) {
+                uasort($translationsHashed, function ($a, $b) {
                     return strcasecmp($a->getOriginal(), $b->getOriginal());
                 });
                 $result[$parser->getParsedItemNames()] = $translationsHashed;
             }
         } else {
             $result = new \Gettext\Translations();
-            foreach($lh->getDynamicItemParsers() as $parser) {
+            foreach ($lh->getDynamicItemParsers() as $parser) {
                 $parser->parse($result, APP_VERSION);
             }
         }
+
         return $result;
     }
 
@@ -79,13 +80,12 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController
             }
             $translationsGroups = $this->getTranslations(true);
             foreach ($translationsGroups as $translationsGroup) {
-                foreach($translationsGroup as $translation) {
+                foreach ($translationsGroup as $translation) {
                     /* @var $translation = \Gettext\Translation */
                     $sourceText = $translation->getOriginal();
-                    if($translation->hasContext()) {
+                    if ($translation->hasContext()) {
                         $translatedText = tc($translation->getContext(), $sourceText);
-                    }
-                    else {
+                    } else {
                         $translatedText = t($sourceText);
                     }
                     if (is_string($translatedText) && ($translatedText !== '') && ($translatedText !== $sourceText)) {
@@ -135,10 +135,10 @@ class DashboardSystemBasicsLocalizerController extends DashboardBaseController
                     }
                     $translations->setHeader('Last-Translator', $me ? $me->getUserName() : 'unknown');
                     $somethingTranslated = false;
-                    foreach($translations as $translation) {
+                    foreach ($translations as $translation) {
                         /* @var $translation \Gettext\Translation */
                         $translated = $this->post('translation_'.md5($translation->getId()));
-                        if(is_string($translated) && ($translated !== '')) {
+                        if (is_string($translated) && ($translated !== '')) {
                             $translation->setTranslation($translated);
                             $somethingTranslated = true;
                         }
