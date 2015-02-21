@@ -6,8 +6,7 @@ echo $dh->getDashboardPaneHeaderWrapper(t('Translate special items'), false, 'sp
 
 if (empty($locales)) {
     ?><div class="alert"><?php echo t('No locales defined.'); ?></div><?php
-}
-else {
+} else {
     $ih = Loader::helper('concrete/interface');
     $jh = Loader::helper('json');
     /* @var $jh JsonHelper */
@@ -28,21 +27,19 @@ else {
             <div class="span5">
                 <label>
                     <?php echo t('Items'); ?>
-                    <select id="tsi-which" onchange="updateCurrentGroup()">
-                        <?php
+                    <select id="tsi-which" onchange="updateCurrentGroup()"><?php
                         foreach (array_keys($translationsGroups) as $tg) {
                             ?><option <?php echo ($tg == $currentGroup) ? ' selected="selected"' : ''; ?>><?php echo h($tg); ?></option><?php
                         }
-                        ?>
-                    </select>
+                    ?></select>
                 </label>
             </div>
             <div class="span5">
                 <label>
                     <?php echo t('Language'); ?>
                     <select onchange="window.location.href = <?php echo h($jh->encode(View::url('/dashboard/system/basics/localizer', 'view', 'SELECTEDLOCALE', 'SELECTEDGROUP'))); ?>.replace(/SELECTEDLOCALE/,  encodeURIComponent(this.value)).replace(/SELECTEDGROUP/, document.getElementById('tsi-which').selectedIndex); "><?php
-                    foreach ($locales as $localeID => $localeName) {
-                        ?><option value="<?php echo h($localeID); ?>"<?php echo ($localeID == $locale) ? ' selected="selected"' : ''; ?>><?php echo h($localeName); ?></option><?php
+                        foreach ($locales as $localeID => $localeName) {
+                            ?><option value="<?php echo h($localeID); ?>"<?php echo($localeID == $locale) ? ' selected="selected"' : ''; ?>><?php echo h($localeName); ?></option><?php
                     }
                     ?></select>
                 </label>
@@ -60,13 +57,12 @@ else {
             $groupIndex = 0;
             foreach ($translationsGroups as $tg => $translations) {
                 ?><table class="table table-striped table-condensed tsi-table" style="display:none" id="tsi-table-<?php echo $groupIndex; ?>">
-                    <tbody>
-                        <?php
+                    <tbody><?php
                         foreach ($translations as $hash => $translation) {
                             /* @var $translation \Gettext\Translation */
-                            if(isset($already[$hash])) {
+                            if (isset($already[$hash])) {
                                 $duplicated = true;
-                                if($already[$hash]) {
+                                if ($already[$hash]) {
                                     $duplicatedHashes[] = $hash;
                                     $already[$hash] = false;
                                 }
@@ -77,19 +73,18 @@ else {
                             ?><tr>
                                 <td style="width:33%"><?php echo h($translation->getOriginal()); ?></td>
                                 <td><input type="text" style="width:100%" placeholder="<?php echo h(t('Same as English (US)')); ?>"<?php
-                                    if($duplicated) {
+                                    if ($duplicated) {
                                         ?> data-same-as-name="<?php echo h($hash); ?>"<?php
                                     } else {
                                         ?> name="translation_<?php echo h($hash); ?>"<?php
                                     }
-                                    if($translation->hasTranslation()) {
+                                    if ($translation->hasTranslation()) {
                                         ?> value="<?php echo h($translation->getTranslation()); ?>"<?php
                                     }
                                 ?> /></td>
                             </tr><?php
                         }
-                        ?>
-                    </tbody>
+                    ?></tbody>
                 </table><?php
                 $groupIndex++;
             }
@@ -97,21 +92,22 @@ else {
                 ?><script>$(document).ready(function() {
 var $form = $('#user-translate-form');
 function SameGroup(hash) {
-	var me = this;
-	me.inputs = $form.find('input[name="translation_'+hash+'"], input[data-same-as-name="'+hash+'"]');
-	me.inputs.on('change', function() {
-		var sourceInput = this, sourceText = sourceInput.value;
-		me.inputs.each(function() {
-			if(this !== sourceInput) {
-				this.value = sourceText;
-			}
-		});
-	});
+    var me = this;
+    me.inputs = $form.find('input[name="translation_'+hash+'"], input[data-same-as-name="'+hash+'"]');
+    me.inputs.on('change', function() {
+        var sourceInput = this, sourceText = sourceInput.value;
+        me.inputs.each(function() {
+            if(this !== sourceInput) {
+                this.value = sourceText;
+            }
+        });
+    });
 }
 $.each(<?php echo $jh->encode($duplicatedHashes) ?>, function(_, hash) {
-	new SameGroup(hash);   
+    new SameGroup(hash);
 });
                 });</script><?php
+
             }
             ?>
         </form>

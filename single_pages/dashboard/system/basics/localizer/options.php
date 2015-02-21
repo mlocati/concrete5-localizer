@@ -16,13 +16,18 @@ echo $dh->getDashboardPaneHeaderWrapper(t('Localizer options'), false, 'span12',
                         ?><tr>
                             <td><?php echo $parser['name']; ?></td>
                             <td><?php
-                                if(!is_bool($parser['selected'])) {
+                                if (!is_bool($parser['selected'])) {
                                     ?><span style="color: #777"><?php echo h(t($parser['selected'])); ?></span><?php
-                                }
-                                else {
+                                } else {
                                     ?>
-                                    <label class="radio inline"><input type="radio" name="enable_<?php echo $parser['handle']; ?>" value="1" <?php echo $parser['selected'] ? ' checked' : ''; ?>> <?php echo t('enabled')?></label>
-                                    <label class="radio inline"><input type="radio" name="enable_<?php echo $parser['handle']; ?>" value="0" <?php echo $parser['selected'] ? '' : ' checked'; ?>> <?php echo t('disabled')?></label>
+                                    <label class="radio inline">
+                                        <input type="radio" name="enable_<?php echo $parser['handle']; ?>" value="1" <?php echo $parser['selected'] ? ' checked' : ''; ?>>
+                                        <?php echo t('enabled'); ?>
+                                    </label>
+                                    <label class="radio inline">
+                                        <input type="radio" name="enable_<?php echo $parser['handle']; ?>" value="0" <?php echo $parser['selected'] ? '' : ' checked'; ?>>
+                                        <?php echo t('disabled'); ?>
+                                    </label>
                                     <?php
                                 }
                             ?></td>
