@@ -78,8 +78,10 @@ else {
                             }
                             ?><tr>
                                 <td style="width:33%"><?php echo h($translation->getOriginal()); ?></td>
-                                <td><input type="text" style="width:100%" placeholder="<?php echo h(t('Same as English (US)')); ?>" id="<?php echo h($hash); ?>"<?php
-                                    if(!$duplicated) {
+                                <td><input type="text" style="width:100%" placeholder="<?php echo h(t('Same as English (US)')); ?>"<?php
+                                    if($duplicated) {
+                                        ?> data-same-as-name="<?php echo h($hash); ?>"<?php
+                                    } else {
                                         ?> name="<?php echo h($hash); ?>"<?php
                                     }
                                     if($translation->hasTranslation()) {
@@ -94,9 +96,24 @@ else {
                 $index++;
             }
             if (!empty($duplicatedHashes)) {
-                ?><script>
-                alert(<?php echo $jh->encode($duplicatedHashes) ?>);
-                </script><?php
+                ?><script>$(document).ready(function() {
+var $form = $('#user-translate-form');
+function SameGroup(hash) {
+	var me = this;
+	me.inputs = $form.find('input[name="'+hash+'"], input[data-same-as-name="'+hash+'"]');
+	me.inputs.on('change', function() {
+		var sourceInput = this, sourceText = sourceInput.value;
+		me.inputs.each(function() {
+			if(this !== sourceInput) {
+				this.value = sourceText;
+			}
+		});
+	});
+}
+$.each(<?php echo $jh->encode($duplicatedHashes) ?>, function(_, hash) {
+	new SameGroup(hash);   
+});
+                });</script><?php
             }
             ?>
         </form>
