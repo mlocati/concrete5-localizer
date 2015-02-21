@@ -50,7 +50,7 @@ class LocalizerHelper
     }
     public function getDynamicItemParsers($onlyActive = true)
     {
-        Loader::helper('localizer_composer', 'localizer')->loadAutoloaders();
+        $this->loadAutoloaders();
         $dynamicParser = new \C5TL\Parser\Dynamic();
         $parsers = $dynamicParser->getSubParsers();
         if($onlyActive) {
@@ -63,6 +63,19 @@ class LocalizerHelper
             $parsers = $filtered;
         }
         return $parsers;
+    }
+
+    public function loadAutoloaders()
+    {
+        if (!class_exists('\Gettext\Translations', true)) {
+            Loader::library('3rdparty/gettext/gettext/src/autoloader', 'localizer');
+        }
+        if (!class_exists('\C5TL\Languages\Language', true)) {
+            Loader::library('3rdparty/gettext/languages/src/autoloader', 'localizer');
+        }
+        if (!class_exists('\C5TL\Parser', true)) {
+            Loader::library('3rdparty/mlocati/concrete5-translation-library/src/autoloader', 'localizer');
+        }
     }
     
 }

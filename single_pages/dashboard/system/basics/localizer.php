@@ -15,9 +15,9 @@ else {
     <script type="text/javascript">
         function updateCurrentGroup() {
             $(".tsi-table").hide();
-            var tsi = $("#tsi-which").val();
-            $("#tsi-table-" + tsi).show();
-            $('#currentGroup').val(tsi);
+            var groupIndex = document.getElementById('tsi-which').selectedIndex;
+            $("#tsi-table-" + groupIndex).show();
+            $('#currentGroupIndex').val(groupIndex);
         }
         $(document).ready(function() {
             updateCurrentGroup();
@@ -28,12 +28,10 @@ else {
             <div class="span5">
                 <label>
                     <?php echo t('Items'); ?>
-                    <select id="tsi-which" name="currentGroup" onchange="updateCurrentGroup()">
+                    <select id="tsi-which" onchange="updateCurrentGroup()">
                         <?php
-                        $index = 0;
                         foreach (array_keys($translationsGroups) as $tg) {
-                            ?><option value="<?php echo $index; ?>"<?php echo ($tg == $currentGroup) ? ' selected="selected"' : ''; ?>><?php echo h($tg); ?></option><?php
-                            $index++;
+                            ?><option <?php echo ($tg == $currentGroup) ? ' selected="selected"' : ''; ?>><?php echo h($tg); ?></option><?php
                         }
                         ?>
                     </select>
@@ -42,7 +40,7 @@ else {
             <div class="span5">
                 <label>
                     <?php echo t('Language'); ?>
-                    <select onchange="window.location.href = <?php echo h($jh->encode(View::url('/dashboard/system/basics/localizer/?locale='))); ?> + encodeURIComponent(this.value)"><?php
+                    <select onchange="window.location.href = <?php echo h($jh->encode(View::url('/dashboard/system/basics/localizer', 'view', 'SELECTEDLOCALE', 'SELECTEDGROUP'))); ?>.replace(/SELECTEDLOCALE/,  encodeURIComponent(this.value)).replace(/SELECTEDGROUP/, document.getElementById('tsi-which').selectedIndex); "><?php
                     foreach ($locales as $localeID => $localeName) {
                         ?><option value="<?php echo h($localeID); ?>"<?php echo ($localeID == $locale) ? ' selected="selected"' : ''; ?>><?php echo h($localeName); ?></option><?php
                     }
@@ -53,15 +51,15 @@ else {
     </div>
     <div class="ccm-pane-body">
         <form method="post" id="user-translate-form" action="<?php echo $this->action('update') ?>" class="form-horizontal">
-            <input type="hidden" name="currentGroup" id="currentGroup" value="<?php echo h($currentGroup); ?>">
-            <input type="hidden" name="locale" value="<?php echo h($locale); ?>">
+            <input type="hidden" name="currentGroupIndex" id="currentGroupIndex" />
+            <input type="hidden" name="locale" value="<?php echo h($locale); ?>" />
             <?php
             echo $this->controller->token->output('update_translations');
             $already = array();
             $duplicatedHashes = array();
-            $index = 0;
+            $groupIndex = 0;
             foreach ($translationsGroups as $tg => $translations) {
-                ?><table class="table table-striped table-condensed tsi-table" style="display:none" id="tsi-table-<?php echo $index; ?>">
+                ?><table class="table table-striped table-condensed tsi-table" style="display:none" id="tsi-table-<?php echo $groupIndex; ?>">
                     <tbody>
                         <?php
                         foreach ($translations as $hash => $translation) {
@@ -82,7 +80,7 @@ else {
                                     if($duplicated) {
                                         ?> data-same-as-name="<?php echo h($hash); ?>"<?php
                                     } else {
-                                        ?> name="<?php echo h($hash); ?>"<?php
+                                        ?> name="translation_<?php echo h($hash); ?>"<?php
                                     }
                                     if($translation->hasTranslation()) {
                                         ?> value="<?php echo h($translation->getTranslation()); ?>"<?php
@@ -93,14 +91,14 @@ else {
                         ?>
                     </tbody>
                 </table><?php
-                $index++;
+                $groupIndex++;
             }
             if (!empty($duplicatedHashes)) {
                 ?><script>$(document).ready(function() {
 var $form = $('#user-translate-form');
 function SameGroup(hash) {
 	var me = this;
-	me.inputs = $form.find('input[name="'+hash+'"], input[data-same-as-name="'+hash+'"]');
+	me.inputs = $form.find('input[name="translation_'+hash+'"], input[data-same-as-name="'+hash+'"]');
 	me.inputs.on('change', function() {
 		var sourceInput = this, sourceText = sourceInput.value;
 		me.inputs.each(function() {
